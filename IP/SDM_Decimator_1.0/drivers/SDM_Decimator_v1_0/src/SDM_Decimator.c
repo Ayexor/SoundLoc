@@ -42,7 +42,7 @@ unsigned int SDM_DECIM_getDecimation(int BaseAddress){
  * Get decimated value of mic Mic
  */
 int SDM_DECIM_getValue(int BaseAddress, int Mic){
-	switch (mic) {
+	switch (Mic) {
 		case 0:
 			return SDM_DECIMATOR_mReadReg(BaseAddress, SDM_DECIMATOR_S_AXI_REG2_VALUE0_OFFSET);
 		case 1:
