@@ -38,7 +38,7 @@ for i = 1:length(phi_rec)
     end
 end
 % error and compensation
-phi_rec_error = phi_rec - phi' + 15*sin(4*pi/360*phi');
+phi_rec_error = phi_rec - phi' + 15*sin(2*2*pi/360*phi') - 2.2*sin(4*2*pi/360*phi');
 
 %% plot
 subplot(2,2,1)
