@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:busDefinition xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <spirit:vendor>hsr.com</spirit:vendor>
+  <spirit:library>user</spirit:library>
+  <spirit:name>SH_595</spirit:name>
+  <spirit:version>1.0</spirit:version>
+  <spirit:directConnection>false</spirit:directConnection>
+  <spirit:isAddressable>false</spirit:isAddressable>
+  <spirit:maxMasters>1</spirit:maxMasters>
+  <spirit:maxSlaves>1</spirit:maxSlaves>
+  <spirit:description>Interface to 74XX595 Shift Registers</spirit:description>
+  <spirit:vendorExtensions>
+    <xilinx:busDefinitionInfo>
+      <xilinx:displayName>sh</xilinx:displayName>
+    </xilinx:busDefinitionInfo>
+  </spirit:vendorExtensions>
+</spirit:busDefinition>
