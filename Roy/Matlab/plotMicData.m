@@ -19,7 +19,7 @@ mic3_r = dataArray{:, 3};
 %% paramter
 decim = 40;
 c = 340; % distance in m (set to 1 for delay in sec)
-pTau = 16; % plot samples of corr
+pTau = 32; % plot samples of corr
 N = length(mic1_r);
 Ts = decim/2.5e6;
 t = (1:N) * Ts;
@@ -40,6 +40,11 @@ cor13 = xcorr(mic1, mic3);
 cor12 = cor12(N-pTau:N+pTau)' - mean(cor12(N-pTau:N+pTau));
 cor13 = cor13(N-pTau:N+pTau)' - mean(cor13(N-pTau:N+pTau));
 
+% finde tau
+[~, tau01] = max(cor12); tau01 = (tau01-pTau-1)*Ts*c;
+[~, tau02] = max(cor13); tau02 = (tau02-pTau-1)*Ts*c;
+
+angle = atan2(tau01, tau02)*180/pi + 135
 
 tau = -pTau:pTau;
 figure(1)
