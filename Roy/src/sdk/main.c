@@ -17,7 +17,7 @@
 #define ORDER		3
 #define IRQ_ENA		0b100
 #define TAU_MAX		16
-#define SAMPLE_CNT	3*19000
+#define SAMPLE_CNT	3*1024
 #define CIC			XPAR_CIC_S_AXI_BASEADDR
 #define SH			XPAR_SH_S_AXI_BASEADDR
 #define XCORR		XPAR_XCORR_S_AXI_BASEADDR
