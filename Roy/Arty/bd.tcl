@@ -252,12 +252,8 @@ CONFIG.FREQ_HZ {100000000} \
 CONFIG.PHASE {0.000} \
  ] $sys_clock
 
-  # Create instance: CIC, and set properties
-  set CIC [ create_bd_cell -type ip -vlnv xilinx.com:user:SDM_Decimator:1.0 CIC ]
-  set_property -dict [ list \
-CONFIG.D_OUT_WIDTH {10} \
-CONFIG.D_WIDTH {24} \
- ] $CIC
+  # Create instance: SDM_Decimator_0, and set properties
+  set SDM_Decimator_0 [ create_bd_cell -type ip -vlnv xilinx.com:user:SDM_Decimator:1.0 SDM_Decimator_0 ]
 
   # Create instance: SH, and set properties
   set SH [ create_bd_cell -type ip -vlnv Xilinx.com:user:AXI_SH_595:1.0 SH ]
@@ -368,87 +364,87 @@ CONFIG.C_USE_REORDER_INSTR {0} \
  ] $uB
 
   # Create interface connections
+  connect_bd_intf_net -intf_net SDM_Decimator_0_mic_bs [get_bd_intf_ports mic_bs] [get_bd_intf_pins SDM_Decimator_0/mic_bs]
+  connect_bd_intf_net -intf_net SDM_Decimator_0_mic_data [get_bd_intf_pins SDM_Decimator_0/mic_data] [get_bd_intf_pins XCorr/mic]
   connect_bd_intf_net -intf_net SH [get_bd_intf_ports sh] [get_bd_intf_pins SH/sh]
   connect_bd_intf_net -intf_net UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins UART/UART]
   connect_bd_intf_net -intf_net axi_intc_0_interrupt [get_bd_intf_pins intc/interrupt] [get_bd_intf_pins uB/INTERRUPT]
-  connect_bd_intf_net -intf_net mic_bs [get_bd_intf_ports mic_bs] [get_bd_intf_pins CIC/mic_bs]
-  connect_bd_intf_net -intf_net mic_data [get_bd_intf_pins CIC/mic_data] [get_bd_intf_pins XCorr/mic]
+  connect_bd_intf_net -intf_net ic_M00_AXI [get_bd_intf_pins UART/S_AXI] [get_bd_intf_pins ic/M00_AXI]
+  connect_bd_intf_net -intf_net ic_M01_AXI [get_bd_intf_pins ic/M01_AXI] [get_bd_intf_pins intc/s_axi]
+  connect_bd_intf_net -intf_net ic_M02_AXI [get_bd_intf_pins SH/S_AXI] [get_bd_intf_pins ic/M02_AXI]
+  connect_bd_intf_net -intf_net ic_M03_AXI [get_bd_intf_pins SDM_Decimator_0/S_AXI] [get_bd_intf_pins ic/M03_AXI]
+  connect_bd_intf_net -intf_net ic_M04_AXI [get_bd_intf_pins XCorr/S_AXI] [get_bd_intf_pins ic/M04_AXI]
   connect_bd_intf_net -intf_net microblaze_0_M_AXI_DP [get_bd_intf_pins ic/S00_AXI] [get_bd_intf_pins uB/M_AXI_DP]
-  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M00_AXI [get_bd_intf_pins CIC/S_AXI] [get_bd_intf_pins ic/M00_AXI]
-  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M01_AXI [get_bd_intf_pins UART/S_AXI] [get_bd_intf_pins ic/M01_AXI]
-  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M02_AXI [get_bd_intf_pins SH/S_AXI] [get_bd_intf_pins ic/M02_AXI]
-  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M03_AXI [get_bd_intf_pins ic/M03_AXI] [get_bd_intf_pins intc/s_axi]
-  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M04_AXI [get_bd_intf_pins XCorr/S_AXI] [get_bd_intf_pins ic/M04_AXI]
   connect_bd_intf_net -intf_net microblaze_0_debug [get_bd_intf_pins mdm_1/MBDEBUG_0] [get_bd_intf_pins uB/DEBUG]
   connect_bd_intf_net -intf_net microblaze_0_dlmb_1 [get_bd_intf_pins ram/DLMB] [get_bd_intf_pins uB/DLMB]
   connect_bd_intf_net -intf_net microblaze_0_ilmb_1 [get_bd_intf_pins ram/ILMB] [get_bd_intf_pins uB/ILMB]
 
   # Create port connections
   connect_bd_net -net XCorr_irq [get_bd_pins XCorr/irq] [get_bd_pins intc/intr]
-  connect_bd_net -net clk_wiz1_clk_out1 [get_bd_pins CIC/s_axi_aclk] [get_bd_pins SH/s_axi_aclk] [get_bd_pins UART/s_axi_aclk] [get_bd_pins XCorr/s_axi_aclk] [get_bd_pins clk_wiz_0/clk_out1] [get_bd_pins ic/ACLK] [get_bd_pins ic/M00_ACLK] [get_bd_pins ic/M01_ACLK] [get_bd_pins ic/M02_ACLK] [get_bd_pins ic/M03_ACLK] [get_bd_pins ic/M04_ACLK] [get_bd_pins ic/S00_ACLK] [get_bd_pins intc/s_axi_aclk] [get_bd_pins ram/LMB_Clk] [get_bd_pins rst/slowest_sync_clk] [get_bd_pins uB/Clk]
+  connect_bd_net -net clk_wiz1_clk_out1 [get_bd_pins SDM_Decimator_0/s_axi_aclk] [get_bd_pins SH/s_axi_aclk] [get_bd_pins UART/s_axi_aclk] [get_bd_pins XCorr/s_axi_aclk] [get_bd_pins clk_wiz_0/clk_out1] [get_bd_pins ic/ACLK] [get_bd_pins ic/M00_ACLK] [get_bd_pins ic/M01_ACLK] [get_bd_pins ic/M02_ACLK] [get_bd_pins ic/M03_ACLK] [get_bd_pins ic/M04_ACLK] [get_bd_pins ic/S00_ACLK] [get_bd_pins intc/s_axi_aclk] [get_bd_pins ram/LMB_Clk] [get_bd_pins rst/slowest_sync_clk] [get_bd_pins uB/Clk]
   connect_bd_net -net clk_wiz_1_locked [get_bd_pins clk_wiz_0/locked] [get_bd_pins rst/dcm_locked]
   connect_bd_net -net mdm_1_debug_sys_rst [get_bd_pins mdm_1/Debug_SYS_Rst] [get_bd_pins rst/mb_debug_sys_rst]
   connect_bd_net -net reset_1 [get_bd_ports reset] [get_bd_pins rst/ext_reset_in]
   connect_bd_net -net rst_clk_wiz_1_100M_bus_struct_reset [get_bd_pins ram/SYS_Rst] [get_bd_pins rst/bus_struct_reset]
   connect_bd_net -net rst_clk_wiz_1_100M_mb_reset [get_bd_pins rst/mb_reset] [get_bd_pins uB/Reset]
-  connect_bd_net -net rst_clk_wiz_1_100M_peripheral_aresetn [get_bd_pins CIC/s_axi_aresetn] [get_bd_pins SH/s_axi_aresetn] [get_bd_pins UART/s_axi_aresetn] [get_bd_pins XCorr/s_axi_aresetn] [get_bd_pins ic/M00_ARESETN] [get_bd_pins ic/M01_ARESETN] [get_bd_pins ic/M02_ARESETN] [get_bd_pins ic/M03_ARESETN] [get_bd_pins ic/M04_ARESETN] [get_bd_pins ic/S00_ARESETN] [get_bd_pins intc/s_axi_aresetn] [get_bd_pins rst/peripheral_aresetn]
+  connect_bd_net -net rst_clk_wiz_1_100M_peripheral_aresetn [get_bd_pins SDM_Decimator_0/s_axi_aresetn] [get_bd_pins SH/s_axi_aresetn] [get_bd_pins UART/s_axi_aresetn] [get_bd_pins XCorr/s_axi_aresetn] [get_bd_pins ic/M00_ARESETN] [get_bd_pins ic/M01_ARESETN] [get_bd_pins ic/M02_ARESETN] [get_bd_pins ic/M03_ARESETN] [get_bd_pins ic/M04_ARESETN] [get_bd_pins ic/S00_ARESETN] [get_bd_pins intc/s_axi_aresetn] [get_bd_pins rst/peripheral_aresetn]
   connect_bd_net -net rst_interconnect_aresetn [get_bd_pins ic/ARESETN] [get_bd_pins rst/interconnect_aresetn]
   connect_bd_net -net sys_clock_1 [get_bd_ports sys_clock] [get_bd_pins clk_wiz_0/clk_in1]
 
   # Create address segments
-  create_bd_addr_seg -range 0x00010000 -offset 0x44A00000 [get_bd_addr_spaces uB/Data] [get_bd_addr_segs SH/S_AXI/S_AXI_reg] SEG_AXI_SH_595_S_AXI_reg
-  create_bd_addr_seg -range 0x00010000 -offset 0x44A20000 [get_bd_addr_spaces uB/Data] [get_bd_addr_segs CIC/S_AXI/S_AXI_reg] SEG_SDM_Decimator_0_S_AXI_reg
+  create_bd_addr_seg -range 0x00010000 -offset 0x44A10000 [get_bd_addr_spaces uB/Data] [get_bd_addr_segs SDM_Decimator_0/S_AXI/S_AXI_reg] SEG_SDM_Decimator_0_S_AXI_reg
+  create_bd_addr_seg -range 0x00010000 -offset 0x44A00000 [get_bd_addr_spaces uB/Data] [get_bd_addr_segs SH/S_AXI/S_AXI_reg] SEG_SH_S_AXI_reg
   create_bd_addr_seg -range 0x00010000 -offset 0x40600000 [get_bd_addr_spaces uB/Data] [get_bd_addr_segs UART/S_AXI/Reg] SEG_UART_Reg
-  create_bd_addr_seg -range 0x00010000 -offset 0x44A10000 [get_bd_addr_spaces uB/Data] [get_bd_addr_segs XCorr/S_AXI/S_AXI] SEG_XCorr_0_S_AXI
-  create_bd_addr_seg -range 0x00010000 -offset 0x41200000 [get_bd_addr_spaces uB/Data] [get_bd_addr_segs intc/S_AXI/Reg] SEG_axi_intc_0_Reg
+  create_bd_addr_seg -range 0x00010000 -offset 0x44A20000 [get_bd_addr_spaces uB/Data] [get_bd_addr_segs XCorr/S_AXI/S_AXI] SEG_XCorr_S_AXI
   create_bd_addr_seg -range 0x00020000 -offset 0x00000000 [get_bd_addr_spaces uB/Data] [get_bd_addr_segs ram/dctrl/SLMB/Mem] SEG_dlmb_bram_if_cntlr_Mem
   create_bd_addr_seg -range 0x00020000 -offset 0x00000000 [get_bd_addr_spaces uB/Instruction] [get_bd_addr_segs ram/ictrl/SLMB/Mem] SEG_ilmb_bram_if_cntlr_Mem
+  create_bd_addr_seg -range 0x00010000 -offset 0x41200000 [get_bd_addr_spaces uB/Data] [get_bd_addr_segs intc/S_AXI/Reg] SEG_intc_Reg
 
   # Perform GUI Layout
   regenerate_bd_layout -layout_string {
    guistr: "# # String gsaved with Nlview 6.5.12  2016-01-29 bk=1.3547 VDI=39 GEI=35 GUI=JA:1.6
 #  -string -flagsOSRD
 preplace port sh -pg 1 -y 210 -defaultsOSRD
-preplace port sys_clock -pg 1 -y 480 -defaultsOSRD
+preplace port sys_clock -pg 1 -y 630 -defaultsOSRD
 preplace port usb_uart -pg 1 -y 80 -defaultsOSRD
-preplace port reset -pg 1 -y 420 -defaultsOSRD
-preplace port mic_bs -pg 1 -y 270 -defaultsOSRD
-preplace inst axi_intc_0 -pg 1 -lvl 3 -y 570 -defaultsOSRD -orient R180
-preplace inst UART -pg 1 -lvl 5 -y 90 -defaultsOSRD
-preplace inst microblaze_0_axi_periph -pg 1 -lvl 4 -y 190 -defaultsOSRD
-preplace inst CIC -pg 1 -lvl 5 -y 350 -defaultsOSRD
-preplace inst rst -pg 1 -lvl 2 -y 440 -defaultsOSRD
-preplace inst mdm_1 -pg 1 -lvl 2 -y 590 -defaultsOSRD
-preplace inst SH -pg 1 -lvl 5 -y 210 -defaultsOSRD
-preplace inst microblaze_0 -pg 1 -lvl 3 -y 380 -defaultsOSRD
-preplace inst clk_wiz_0 -pg 1 -lvl 1 -y 480 -defaultsOSRD
-preplace inst XCorr -pg 1 -lvl 6 -y 350 -defaultsOSRD
-preplace inst microblaze_0_local_memory -pg 1 -lvl 4 -y 460 -defaultsOSRD
-preplace netloc axi_intc_0_interrupt 1 2 1 570
-preplace netloc SDM_Decimator_0_mic_bs 1 5 2 NJ 270 NJ
-preplace netloc rst_interconnect_aresetn 1 2 2 NJ 90 N
-preplace netloc microblaze_0_axi_periph_M04_AXI 1 4 2 1340 280 NJ
-preplace netloc SH_sh 1 5 2 NJ 210 NJ
-preplace netloc clk_wiz1_clk_out1 1 1 5 180 350 550 460 1030 550 1360 420 NJ
-preplace netloc microblaze_0_axi_periph_M03_AXI 1 3 2 NJ 600 1330
-preplace netloc CIC_mic_data 1 5 1 N
-preplace netloc microblaze_0_ilmb_1 1 3 1 1020
-preplace netloc microblaze_0_axi_periph_M00_AXI 1 4 1 1350
-preplace netloc microblaze_0_M_AXI_DP 1 3 1 1010
+preplace port reset -pg 1 -y 570 -defaultsOSRD
+preplace port mic_bs -pg 1 -y 390 -defaultsOSRD
+preplace inst SDM_Decimator_0 -pg 1 -lvl 6 -y 350 -defaultsOSRD
+preplace inst UART -pg 1 -lvl 6 -y 90 -defaultsOSRD
+preplace inst ram -pg 1 -lvl 5 -y 500 -defaultsOSRD
+preplace inst intc -pg 1 -lvl 3 -y 490 -defaultsOSRD
+preplace inst rst -pg 1 -lvl 2 -y 590 -defaultsOSRD
+preplace inst mdm_1 -pg 1 -lvl 3 -y 350 -defaultsOSRD
+preplace inst SH -pg 1 -lvl 6 -y 210 -defaultsOSRD
+preplace inst XCorr -pg 1 -lvl 7 -y 310 -defaultsOSRD
+preplace inst uB -pg 1 -lvl 4 -y 490 -defaultsOSRD
+preplace inst clk_wiz_0 -pg 1 -lvl 1 -y 630 -defaultsOSRD
+preplace inst ic -pg 1 -lvl 5 -y 190 -defaultsOSRD
+preplace netloc axi_intc_0_interrupt 1 3 1 780
+preplace netloc rst_interconnect_aresetn 1 2 3 NJ 610 NJ 610 1250
+preplace netloc ic_M03_AXI 1 5 1 1590
+preplace netloc SDM_Decimator_0_mic_data 1 6 1 1830
+preplace netloc UART 1 6 2 NJ 80 NJ
+preplace netloc ic_M02_AXI 1 5 1 N
+preplace netloc clk_wiz1_clk_out1 1 1 6 180 500 530 570 780 570 1240 390 1600 420 NJ
+preplace netloc SDM_Decimator_0_mic_bs 1 6 2 NJ 390 NJ
+preplace netloc microblaze_0_ilmb_1 1 4 1 N
+preplace netloc microblaze_0_M_AXI_DP 1 4 1 1230
 preplace netloc sys_clock_1 1 0 1 NJ
-preplace netloc rst_clk_wiz_1_100M_bus_struct_reset 1 2 2 NJ 470 1010
-preplace netloc microblaze_0_axi_periph_M01_AXI 1 4 1 1330
-preplace netloc rst_clk_wiz_1_100M_peripheral_aresetn 1 2 4 NJ 480 1050 560 1370 430 NJ
-preplace netloc rst_clk_wiz_1_100M_mb_reset 1 2 1 540
-preplace netloc clk_wiz_1_locked 1 1 1 190
-preplace netloc axi_uartlite_0_UART 1 5 2 NJ 80 NJ
-preplace netloc microblaze_0_dlmb_1 1 3 1 1040
-preplace netloc microblaze_0_axi_periph_M02_AXI 1 4 1 N
-preplace netloc microblaze_0_debug 1 2 1 560
-preplace netloc reset_1 1 0 2 NJ 420 NJ
-preplace netloc mdm_1_debug_sys_rst 1 1 2 190 330 510
-preplace netloc XCorr_0_irq 1 3 4 NJ 540 NJ 540 NJ 540 1810
-levelinfo -pg 1 0 100 350 790 1200 1500 1720 1830 -top 0 -bot 650
+preplace netloc ic_M00_AXI 1 5 1 1570
+preplace netloc ic_M01_AXI 1 2 4 550 410 NJ 410 NJ 410 1570
+preplace netloc rst_clk_wiz_1_100M_bus_struct_reset 1 2 3 NJ 600 NJ 600 1260
+preplace netloc SH 1 6 2 NJ 210 NJ
+preplace netloc rst_clk_wiz_1_100M_peripheral_aresetn 1 2 5 540 620 NJ 620 1270 400 1610 430 NJ
+preplace netloc rst_clk_wiz_1_100M_mb_reset 1 2 2 520 580 NJ
+preplace netloc clk_wiz_1_locked 1 1 1 180
+preplace netloc XCorr_irq 1 2 6 550 590 NJ 590 NJ 590 NJ 590 NJ 590 2030
+preplace netloc microblaze_0_dlmb_1 1 4 1 N
+preplace netloc ic_M04_AXI 1 5 2 1580 280 NJ
+preplace netloc microblaze_0_debug 1 3 1 790
+preplace netloc reset_1 1 0 2 NJ 570 NJ
+preplace netloc mdm_1_debug_sys_rst 1 1 3 190 680 NJ 680 770
+levelinfo -pg 1 0 100 350 660 1010 1420 1720 1940 2050 -top 0 -bot 690
 ",
 }
 
@@ -466,4 +462,6 @@ levelinfo -pg 1 0 100 350 790 1200 1500 1720 1830 -top 0 -bot 650
 
 create_root_design ""
 
+
+common::send_msg_id "BD_TCL-1000" "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 

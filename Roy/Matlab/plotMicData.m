@@ -3,7 +3,7 @@ clc
 format shortEng
 
 %% Import data from text file.
-filename = 'E:\git\SoundLoc\Vivado\SoundLoc.sdk\soundLoc\log.txt';
+filename = 'E:\git\SoundLoc\Roy\SDK\src\log.txt';
 fileID = fopen(filename,'r');
 try
 dataArray = textscan(fileID, '%f%f%f%[^\n\r]', 'Delimiter', ',',  'ReturnOnError', false);

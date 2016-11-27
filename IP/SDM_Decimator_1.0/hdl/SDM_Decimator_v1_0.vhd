@@ -60,7 +60,8 @@ architecture arch_imp of SDM_Decimator_v1_0 is
 	signal decim_max, decim_cnt, decim_cnt_next : unsigned(D_WIDTH-1 downto 0);
 	
 	signal val_i: mic_data_t;
-	signal run, decim_ena, inv_bs, clk, rst, irq_ena, ena_3rd_order, clk_ena : std_logic;
+	signal decim_ena, clk, rst, irq_ena, clk_ena : std_logic;
+	signal order : std_logic_vector(1 downto 0);
 
 component CIC
 			generic(D_WIDTH : integer range 1 to 32 := 16);
@@ -68,15 +69,14 @@ component CIC
 				 rst           : in  STD_LOGIC;
 				 bs_ena        : in  STD_LOGIC;
 				 decim_ena     : in  STD_LOGIC;
-				 inv_bs        : in  STD_LOGIC;
-				 ena_3rd_order : IN  STD_LOGIC;
+				 order        : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
 				 bs            : in  STD_LOGIC;
 				 val           : out signed(D_WIDTH - 1 downto 0));
 		end component CIC;
 begin
 
 	clk <= s_axi_aclk;
-	rst <= not s_axi_aresetn or not run;
+	rst <= '1' when ((s_axi_aresetn  = '0') or (order = "00")) else '0';
 
 	clk_divider : process (rst, clk) is
 		variable cnt : integer range 0 to DIVIDE;
@@ -122,9 +122,7 @@ SDM_Decimator_v1_0_S_AXI_inst : entity work.SDM_Decimator_v1_0_S_AXI
 		val0 => val_i(0),
 		val1 => val_i(1),
 		val2 => val_i(2),
-		run => run,
-		inv_bs =>inv_bs,
-		ena_3rd_order => ena_3rd_order,
+		order => order,
 		decim_max=>decim_max,
 		irq_ena=> irq_ena,
 		S_AXI_ACLK	=> s_axi_aclk,
@@ -161,8 +159,7 @@ SDM_Decimator_v1_0_S_AXI_inst : entity work.SDM_Decimator_v1_0_S_AXI
 				rst           => rst,
 				bs_ena        => clk_ena,
 				decim_ena     => decim_ena,
-				inv_bs        => inv_bs,
-				ena_3rd_order => ena_3rd_order,
+				order         => order,
 				bs            => mic_bs(i),
 				val           => val_i(i)
 			);

@@ -16,9 +16,7 @@ entity SDM_Decimator_v1_0_S_AXI is
 	);
 	port (
 		-- Users to add ports here
-		run : out std_logic;
-		inv_bs : out std_logic;
-		ena_3rd_order : out std_logic;
+		order : out std_logic_vector(1 downto 0);
 		decim_max: out unsigned(D_WIDTH-1 downto 0);
 		val0 : in signed(D_WIDTH-1 downto 0);
 		val1 : in signed(D_WIDTH-1 downto 0);
@@ -128,10 +126,8 @@ architecture arch_imp of SDM_Decimator_v1_0_S_AXI is
 begin
 	
 	-- Add user logic here
-	run 							<= slv_reg0(0);
-	inv_bs 							<= slv_reg0(1);
+	order 							<= slv_reg0(1 downto 0);
 	irq_ena							<= slv_reg0(2);
-	ena_3rd_order					<= slv_reg0(3);
 	decim_max 						<= unsigned(slv_reg1(D_WIDTH-1 downto 0));
 	slv_reg2 	<= std_logic_vector(resize(val0, C_S_AXI_DATA_WIDTH));
 	slv_reg3 	<= std_logic_vector(resize(val1, C_S_AXI_DATA_WIDTH));
