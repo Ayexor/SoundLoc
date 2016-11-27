@@ -16,7 +16,7 @@ using namespace Eigen;
 
 int main()
 {
-	double test = 0.0;
+	//double test = 0.0;
 
 	Matrix2f m(2,2);
 	m(0,0) = 3;
@@ -27,12 +27,10 @@ int main()
 
 	xil_printf("Hello World\n\r");
 	LedDisplay_Init();
-	while(1)
-	{
-		LedDisplay_Direction(test);
-		test += 0.05;
-		if(test >= 360.0) test = 0;
-	}
+	LedDisplay_Tau(1, 1);
+
+
+
 	while(1);
 	return 0;
 }
