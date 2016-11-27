@@ -5,7 +5,7 @@
 #include "xil_printf.h"
 #include "mb_interface.h"
 #include "xparameters.h"
-#include "SDM_Dezimator.h"
+#include "SDM_Decimator.h"
 #include "AXI_SH_595.h"
 #include "xintc.h"
 #include "XCorr.h"
@@ -14,6 +14,8 @@
 
 
 #define DECIMATION	40
+#define ORDER		3
+#define IRQ_ENA		0b100
 #define TAU_MAX		16
 #define SAMPLE_CNT	3*19000
 #define CIC			XPAR_CIC_S_AXI_BASEADDR
@@ -113,12 +115,12 @@ void logVal(XIntc* pIntc) {
 	while(!AXI_SH_595_ready(SH));
 	AXI_SH_595_programm_sh(SH, 1 << 14);
 
-	SDM_DECIM_setStatus(CIC, 0b1101); // run, 3rd Order, IRQ
+	SDM_DECIM_setStatus(CIC, ORDER | IRQ_ENA); // setup CIC
 
 	while(!AXI_SH_595_ready(SH));
 	AXI_SH_595_programm_sh(SH, 1 << 12);
 
-	for (int delay = 10000000; delay; --delay);
+	for (int delay = 10000000; delay; --delay); // wait, just for fun...
 
 	top = SAMPLE_CNT;
 	XIntc_Enable(pIntc, 0);
@@ -128,9 +130,9 @@ void logVal(XIntc* pIntc) {
 
 		irg_flag = 1;
 
-		val[top - 0] = (s16) SDM_DECIM_getValue(CIC, 1);
-		val[top - 1] = (s16) SDM_DECIM_getValue(CIC, 2);
-		val[top - 2] = (s16) SDM_DECIM_getValue(CIC, 3);
+		val[top - 0] = (s16) SDM_DECIM_getValue(CIC, 0);
+		val[top - 1] = (s16) SDM_DECIM_getValue(CIC, 1);
+		val[top - 2] = (s16) SDM_DECIM_getValue(CIC, 2);
 		top -= 3;
 	}
 	XIntc_Disable(pIntc, 0);
