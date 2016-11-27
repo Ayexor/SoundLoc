@@ -7,7 +7,7 @@
   <spirit:busType spirit:vendor="hsr.com" spirit:library="user" spirit:name="SH_595" spirit:version="1.0"/>
   <spirit:ports>
     <spirit:port>
-      <spirit:logicalName>str</spirit:logicalName>
+      <spirit:logicalName>shStr</spirit:logicalName>
       <spirit:description>Shift register strobe</spirit:description>
       <spirit:wire>
         <spirit:onMaster>
@@ -22,7 +22,7 @@
       </spirit:wire>
     </spirit:port>
     <spirit:port>
-      <spirit:logicalName>OEn</spirit:logicalName>
+      <spirit:logicalName>shOEn</spirit:logicalName>
       <spirit:description>Shift register output enable. Low active</spirit:description>
       <spirit:wire>
         <spirit:onMaster>
@@ -35,7 +35,7 @@
       </spirit:wire>
     </spirit:port>
     <spirit:port>
-      <spirit:logicalName>data</spirit:logicalName>
+      <spirit:logicalName>shD</spirit:logicalName>
       <spirit:description>Shift register serial data</spirit:description>
       <spirit:wire>
         <spirit:qualifier>
@@ -53,7 +53,7 @@
       </spirit:wire>
     </spirit:port>
     <spirit:port>
-      <spirit:logicalName>dClk</spirit:logicalName>
+      <spirit:logicalName>shClk</spirit:logicalName>
       <spirit:description>Shift register data clock</spirit:description>
       <spirit:wire>
         <spirit:qualifier>
@@ -71,7 +71,7 @@
       </spirit:wire>
     </spirit:port>
     <spirit:port>
-      <spirit:logicalName>mRst_n</spirit:logicalName>
+      <spirit:logicalName>shRstn</spirit:logicalName>
       <spirit:description>shift register master reset. Low active</spirit:description>
       <spirit:wire>
         <spirit:qualifier>
