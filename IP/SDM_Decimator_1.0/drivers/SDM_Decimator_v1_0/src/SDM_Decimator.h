@@ -1,6 +1,7 @@
 /*------------------------------------------------------------------------------
- * AXI Lite Peripheral for 1st Order CIC decimation filter with
- * DSM bit stream as input
+ * AXI Lite Peripheral for CIC decimation filter 
+ * with programmable order up to 3.
+ *
  * Roy Seitz, 2016-11-14 (rseitz@hsr.ch)
  * Decimation can be set from 0 to 2^D_WIDTH - 1.
  * Value format still is 32Bit signed. Note that this is independent of D_WIDTH
@@ -8,20 +9,20 @@
  * AXI still operates on 32Bit width Data.
  *----------------------------------------------------------------------------
  * Usage:
- *  1.	Set Status register by SDM_DEZI_init()
- *  2.	Set decimation by calling SDM_DEZI_setDecimation()
- * (3.)	If needed, get value by calling SDM_DEZI_getVal()
+ *  1.	Set status register by SDM_DECIM_setStatus()
+ *  2.	Set decimation by calling SDM_DECIM_setDecimation()
+ * (3.)	If needed, get value by calling SDM_DECIM_getValue()
  *----------------------------------------------------------------------------
- * Register Description
- * REG 0: 	Status Register (Read/Write)
- *				bit 0:	High active run (rst when '0')
- *				bit 1:	High active invert bitstream
- *				bit 2: 	Enable Interrupt irq_new_val
- * REG 1: 	Decimation Register
- * REG 2: 	Value Register
- *				Contains actual 32bit signed value
+ * Register description
+ * REG 0: 	Status register (read/write)
+ *				bit 1:0:	Order select
+ *							Order 0 disables filter
+ *				bit 2:		Enable interrupt on new value
+ * REG 1: 	Decimation register (unsigned D_WIDTH bit)
+ * REG 2:4	32bit signed value register for mic0 to mic2
  *----------------------------------------------------------------------------
  */
+
 #ifndef SDM_DECIMATOR_H
 #define SDM_DECIMATOR_H
 
@@ -33,9 +34,9 @@
 
 #define SDM_DECIMATOR_S_AXI_REG0_STATUS_OFFSET 0
 #define SDM_DECIMATOR_S_AXI_REG1_DECIMATION_OFFSET 4
-#define SDM_DECIMATOR_S_AXI_REG2_VALUE1_OFFSET 8
-#define SDM_DECIMATOR_S_AXI_REG2_VALUE2_OFFSET 12
-#define SDM_DECIMATOR_S_AXI_REG2_VALUE3_OFFSET 16
+#define SDM_DECIMATOR_S_AXI_REG2_VALUE0_OFFSET 8
+#define SDM_DECIMATOR_S_AXI_REG2_VALUE1_OFFSET 12
+#define SDM_DECIMATOR_S_AXI_REG2_VALUE2_OFFSET 16
 
 /**************************** Type Definitions *****************************/
 /**
@@ -90,7 +91,7 @@ void SDM_DECIM_setStatus(int BaseAddress, int Status);
 
 /**
  *
- * Get Status Reg (REG0) to MASK
+ * Get Status Reg (REG0)
  *
  * @param   BaseAddress is the base address of the SDM_DECIMATOR device.
  *
@@ -125,12 +126,12 @@ unsigned int SDM_DECIM_getDecimation(int BaseAddress);
  * Get actual value (REG2)
  *
  * @param   BaseAddress is the base address of the SDM_DECIMATOR device.
- * @param   mic is the Microphon (1,2 or 3) that's value is to be read. 
- *				values other than 1 to 3 return 0
+ * @param   Mic is the Microphon (0,1 or 2) that's value is to be read. 
+ *				values other than 0 to 2 return 0
  *
  * @return  Decimated 32bit signed Value
  *
  */
-int SDM_DECIM_getValue(int BaseAddress, int mic);
+int SDM_DECIM_getValue(int BaseAddress, int Mic);
 
 #endif // SDM_DECIMATOR_H
