@@ -200,7 +200,8 @@ begin
 				when idle =>
 					if prog_sh = '1' then
 						nState <= start;
-					-- else	stay in idle
+					else
+						nState <= idle;
 					end if;
 				when start =>
 					nState <= setData;
