@@ -12,9 +12,17 @@
 extern void LedDisplay_Init(void);
 
 /* display a pattern where every second LED is lit alternatively */
+/* DOES NOT WORK RIGHT NOW */
 extern void LedDisplay_Rotate(void);
 
-/* display a direction on the Display where the angle is specified. 0 deg is next to microphone 1 */
-extern void LedDisplay_Direction(double direction);
+/* display a direction on the Display where the angle is specified. 0 deg is in direction of microphone 1 */
+extern void LedDisplay_Angle(double angle);
+
+/* display a direction on the Display where a point coordinate is specified. origin is 0,0 */
+extern void LedDisplay_Coordinate(double x, double y);
+
+/* display a direction calculated from the taus directly */
+/* DOES NOT WORK RIGHT NOW */
+extern void LedDisplay_Tau(uint32_t tau12, uint32_t tau13);
 
 #endif /* LEDDISPLAY_H_ */
