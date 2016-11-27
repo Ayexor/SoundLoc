@@ -37,6 +37,7 @@
 
 /****************** Include Files ********************/
 #include "xil_types.h"
+#include "xil_io.h"
 #include "xstatus.h"
 
 #define AXI_SH_595_DATA_OFFSET 0
@@ -50,7 +51,7 @@
  * If the component is implemented in a smaller width, only the least
  * significant data is written.
  *
- * @param   BaseAddress is the base address of the AXI_SH_595device.
+ * @param   BaseAddress is the base address of the AXI_SH_595 device.
  * @param   RegOffset is the register offset from the base to write to.
  * @param   Data is the data written to the register.
  *
