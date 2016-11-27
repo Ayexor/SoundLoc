@@ -6,7 +6,7 @@ format shortEng
 rm = 1.5e-2;    % mic radius
 rs = 120e-2;     % sound source radius
 c = 340;        % speed of sound
-ar = 0.1; %360/64;    % angle resolution
+ar = 1; %360/64;    % angle resolution
 
 
 %% calculation
@@ -38,7 +38,11 @@ for i = 1:length(phi_rec)
     end
 end
 % error and compensation
-phi_rec_error = phi_rec - phi' + 15*sin(2*2*pi/360*phi') - 2.2*sin(4*2*pi/360*phi');
+phi_rec = phi_rec + 15*sin(2*pi/180*phi_rec) + 2.2*sin(4*pi/180*phi_rec);
+phi_rec_error = phi_rec - phi';
+% phi_rec = phi_rec + 15*sin(pi/180*phi_rec);
+
+% phi_rec_error = phi_rec - phi' + 15*sin(2*2*pi/360*phi_rec);
 
 %% plot
 subplot(2,2,1)

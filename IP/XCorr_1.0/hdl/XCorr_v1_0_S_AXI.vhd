@@ -8,7 +8,7 @@ use work.xcorr_pkg.all;
 entity XCorr_v1_0_S_AXI is
 	generic(
 		-- Users to add parameters here
-		D_TAU_MAX          : integer range 4 to 64 := 16;
+		D_TAU_ADDR_WIDTH    : integer range 1 to 6  := 4;
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
 
@@ -19,7 +19,7 @@ entity XCorr_v1_0_S_AXI is
 	);
 	port(
 		-- Users to add ports here
-		xcorr01, xcorr02 : in  T_CORR_RAM(0 to D_TAU_MAX - 1);
+		xcorr01, xcorr02 : in  T_CORR_RAM(-(2 ** (D_TAU_ADDR_WIDTH-1))+1 to (2 ** (D_TAU_ADDR_WIDTH-1)) - 1);
 --		corr_read_addr   : out integer range 0 to D_TAU_MAX-1;
 --		data_valid       : in  std_logic;
 		clear_ram: out  std_logic;
@@ -86,19 +86,10 @@ architecture arch_imp of XCorr_v1_0_S_AXI is
 	---- Signals for user logic register space example
 	--------------------------------------------------
 	---- Number of Slave Registers 10
-	type T_REG is array(0 to D_TAU_MAX-1) of std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
+	type T_REG is array(-(2 ** (D_TAU_ADDR_WIDTH-1))+1 to (2 ** (D_TAU_ADDR_WIDTH-1)) - 1) of std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
 	
 	signal reg01, reg02 : T_REG;
 	signal slv_reg0            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
---	signal slv_reg1            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
---	signal slv_reg2            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
---	signal slv_reg3            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
---	signal slv_reg4            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
---	signal slv_reg5            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
---	signal slv_reg6            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
---	signal slv_reg7            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
---	signal slv_reg8            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
---	signal slv_reg9            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
 	signal slv_reg_rden        : std_logic;
 	signal slv_reg_wren        : std_logic;
 	signal reg_data_out        : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
@@ -107,7 +98,7 @@ begin
 	
 	reg_map : process (xcorr01) is
 	begin
-		for i in 0 to D_TAU_MAX - 1 loop
+		for i in -(2 ** (D_TAU_ADDR_WIDTH-1))+1 to (2 ** (D_TAU_ADDR_WIDTH-1)) - 1 loop
 			reg01(i) <= std_logic_vector(xcorr01(i));
 			reg02(i) <= std_logic_vector(xcorr01(i));
 		end loop;
@@ -278,9 +269,9 @@ begin
 			reg_data_out <= slv_reg0;
 		elsif loc_addr(7) = '1' then
 			if loc_addr(6) = '0' then
-				reg_data_out <= std_logic_vector(resize(xcorr01(to_integer(unsigned(loc_addr(5 downto 0)))), C_S_AXI_DATA_WIDTH));
+				reg_data_out <= std_logic_vector(resize(xcorr01(to_integer(signed(loc_addr(5 downto 0)))), C_S_AXI_DATA_WIDTH));
 			else
-				reg_data_out <= std_logic_vector(resize(xcorr02(to_integer(unsigned(loc_addr(5 downto 0)))), C_S_AXI_DATA_WIDTH));
+				reg_data_out <= std_logic_vector(resize(xcorr02(to_integer(signed(loc_addr(5 downto 0)))), C_S_AXI_DATA_WIDTH));
 			end if;
 		else
 			reg_data_out <= (others => '0');

@@ -28,8 +28,8 @@ begin
 			val01 <= corr01 - resize(mic0*mic1, R_WIDTH);
 			val02 <= corr02 - resize(mic0*mic2, R_WIDTH);
 		else
-			val01 <= resize(corr01 + mic0*mic1,R_WIDTH);
-			val02 <= resize(corr02 + mic0*mic2,R_WIDTH);
+			val01 <= corr01 + resize(mic0*mic1,R_WIDTH);
+			val02 <= corr02 + resize(mic0*mic2,R_WIDTH);
 		end if;
 	else
 		if SUBTRACT then

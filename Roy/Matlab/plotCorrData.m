@@ -4,7 +4,7 @@ format shortEng
 
 
 %% Import data from text file.
-filename = 'E:\git\SoundLoc\Vivado\SoundLoc.sdk\soundLoc\log.txt';
+filename = 'E:\git\SoundLoc\Roy\SDK\src\log.txt';
 fileID = fopen(filename,'r');
 try
 dataArray = textscan(fileID, '%f%f%[^\n\r]', 'Delimiter', ',',  'ReturnOnError', false);
@@ -12,22 +12,27 @@ catch
 end
 fclose(fileID);
 
-MAX_TAU = 16;
+%% Parameter
+TAU_ADDR_WIDTH = 5;
 decim = 40;
-Ts = decim/100e6;
+sample = 250;  
+% whicht sample to plot in detail
 
-sample = 1;
+%% calculation
+Ts = decim/2.5e6;
+TAU_CNT = 2^TAU_ADDR_WIDTH - 1;
 
-tau = (1:MAX_TAU) - MAX_TAU/2;
+
+tau = (-2^(TAU_ADDR_WIDTH-1)+1):(2^(TAU_ADDR_WIDTH-1)-1);
 
 tau01 = dataArray{:, 1};
 tau02 = dataArray{:, 2};
 
-tau01 = reshape(tau01, MAX_TAU, [])';
-tau02 = reshape(tau02, MAX_TAU, [])';
+tau01 = reshape(tau01, TAU_CNT, [])';
+tau02 = reshape(tau02, TAU_CNT, [])';
 
-subplot(1,2,1); mesh(tau01); subplot(1,2,2); mesh(tau02);
-
-% plot(tau, tau01(sample,:), tau, tau02(sample,:), 'r');
-% legend('tau01', 'tau02')
+subplot(2,2,1); mesh(tau01); grid on;
+subplot(2,2,2); mesh(tau02); grid on;
+subplot(2,2,3:4); plot(tau, tau01(sample,:), 'bx', tau, tau02(sample,:), 'rx');
+legend('tau01', 'tau02')
 grid on
