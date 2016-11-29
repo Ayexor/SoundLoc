@@ -33,7 +33,7 @@ use ieee.numeric_std.all;
 --use UNISIM.VComponents.all;
 
 entity CIC is
-	generic(D_WIDTH : integer range 1 to 32 := 16);
+	generic(D_WIDTH : integer range 8 to 32 := 16);
 	Port(clk       : in  STD_LOGIC;
 		 rst       : in  STD_LOGIC;
 		 bs_ena    : in  STD_LOGIC;
@@ -45,7 +45,8 @@ end CIC;
 
 architecture Behavioral of CIC is
 	signal dif1, dif2, dif3, dif_pre1, dif_pre2, dif_pre3 : signed(D_WIDTH - 1 downto 0);
-	signal val_i, acc1, acc2, acc3                       : signed(D_WIDTH - 1 downto 0);
+	signal acc1, acc2, acc3                       : signed(D_WIDTH - 1 downto 0);
+	signal cic_o, cic_o_pre, val_i, val_pre_i               : signed(D_WIDTH - 1 downto 0);
 	signal bs_in : signed(1 downto 0);
 
 begin
@@ -60,24 +61,21 @@ begin
 			acc3 <= (others => '0');
 		elsif rising_edge(clk) then
 			if bs_ena = '1' then
-				case order is
-					when "01" =>
-						acc1 <= acc1 + bs_in;
-						acc2 <= (others => '0');
-						acc3 <= (others => '0');
-					when "10" =>
-						acc1 <= acc1 + bs_in;
-						acc2 <= acc2 + acc1;
-						acc3 <= (others => '0');
-					when "11" =>
-						acc1 <= acc1 + bs_in;
-						acc2 <= acc2 + acc1;
-						acc3 <= acc3 + acc2;
-					when others =>
-						acc1 <= (others => '0');
-						acc2 <= (others => '0');
-						acc3 <= (others => '0');
-				end case;
+				if order /= "00" then -- order = 1, 2 or 3
+					acc1 <= acc1 + bs_in;
+				else
+					acc1 <= (others => '0');
+				end if;
+				if order(1) = '1' then -- order = 2 or 3
+					acc2 <= acc2 + acc1;
+				else
+					acc2 <= (others => '0');
+				end if;
+				if order = "11" then -- order = 3
+					acc3 <= acc3 + acc2;
+				else
+					acc3 <= (others => '0');
+				end if;  
 			end if;
 		end if;
 	end process;
@@ -98,40 +96,55 @@ begin
 				dif_pre2  <= dif2;
 				dif_pre3  <= dif3;
 				
+				if order(1) = '1' then -- order = 2 or 3
+					dif2    <= dif1 - dif_pre1;
+				else
+					dif2 <= (others => '0');
+				end if;
+				if order = "11" then -- order = 3
+					dif3    <= dif2 - dif_pre2;
+				else
+					dif3 <= (others => '0');
+				end if;  
+											
 				case order is
 					when "01" =>
 						dif1    <= acc1;
-						dif2	<= (others => '0');
-						dif3	<= (others => '0');
 					when "10" =>
 						dif1    <= acc2;
-						dif2    <= dif1 - dif_pre1;
-						dif3	<= (others => '0');						
 					when "11" =>
 						dif1    <= acc3;
-						dif2    <= dif1 - dif_pre1;
-						dif3    <= dif2 - dif_pre2;
 					when others =>
 						dif1    <= (others => '0');
-						dif2	<= (others => '0');
-						dif3	<= (others => '0');
 				end case;
 			end if;
 		end if;
 	end process;
 	
-	val_select : process (dif1, dif_pre1, dif2, dif_pre2, dif3, dif_pre3, order) is
+	cic_o_select : process (clk, rst) is
 	begin
-		case order is
-			when "01" =>
-				val_i <= dif1 - dif_pre1;
-			when "10" =>
-				val_i <= dif2 - dif_pre2;						
-			when "11" =>
-				val_i <= dif3 - dif_pre3;
-			when others =>
-				val_i <= (others => '0');
-		end case;
+		if rst = '1' then
+			cic_o_pre <= (others => '0');
+			cic_o <= (others => '0');
+			val_i <= (others => '0');
+		elsif rising_edge(clk) then
+			if decim_ena = '1' then
+				cic_o_pre <= cic_o;
+				case order is
+					when "01" =>
+						cic_o <= dif1 - dif_pre1;
+					when "10" =>
+						cic_o <= dif2 - dif_pre2;						
+					when "11" =>
+						cic_o <= dif3 - dif_pre3;
+					when others =>
+						cic_o <= (others => '0');
+				end case;
+				
+				-- IIR DC-block (1-z**-1)/(1-(1-2**-8)z**-1)
+				val_i <= cic_o - cic_o_pre + (val_i - shift_right(val_i, 8));
+			end if;
+		end if;
 	end process;
 	val   <= val_i;
 end Behavioral;
