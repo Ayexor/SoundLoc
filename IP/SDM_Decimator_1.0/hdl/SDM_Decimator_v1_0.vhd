@@ -110,9 +110,9 @@ sig_resize : process (val_i, post_divide) is
 variable discard_bits : integer range 0 to 15;
 begin
 	discard_bits := to_integer(post_divide);
-	val0 <= shift_right(val_i(0), discard_bits);
-	val1 <= shift_right(val_i(1), discard_bits);
-	val2 <= shift_right(val_i(2), discard_bits);
+	val0 <= resize(shift_right(val_i(0), discard_bits), D_OUT_WIDTH);
+	val1 <= resize(shift_right(val_i(1), discard_bits), D_OUT_WIDTH);
+	val2 <= resize(shift_right(val_i(2), discard_bits), D_OUT_WIDTH);
 end process;
 	
 -- Instantiation of Axi Bus Interface S_AXI
