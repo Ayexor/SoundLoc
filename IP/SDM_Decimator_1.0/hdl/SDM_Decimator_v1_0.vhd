@@ -7,7 +7,6 @@ entity SDM_Decimator_v1_0 is
 		-- Users to add parameters here
 		D_WIDTH : integer range 1 to 32 := 16; -- Internal width
 		D_OUT_WIDTH : integer range 1 to 18 := 16; -- Output Data width (DSP support Data up to 18 Bit)
-		D_DISCARD_BITS : integer range 0 to 31 := 3; -- Number of bits that are to discarde (equal to divide output by 2**D_DISCARD_BITS)
 		DIVIDE : integer range 4 to 1024 := 40; -- Divider to generate BS clk
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
@@ -58,19 +57,22 @@ end SDM_Decimator_v1_0;
 architecture arch_imp of SDM_Decimator_v1_0 is
 	type mic_data_t is array (2 downto 0) of signed(D_WIDTH-1 downto 0);
 	signal decim_max, decim_cnt, decim_cnt_next : unsigned(D_WIDTH-1 downto 0);
+	signal iir_sr, post_divide : unsigned(3 downto 0);
 	
 	signal val_i: mic_data_t;
-	signal decim_ena, clk, rst, irq_ena, clk_ena : std_logic;
+	signal decim_ena, clk, rst, irq_ena, clk_ena, iir_ena : std_logic;
 	signal order : std_logic_vector(1 downto 0);
 
 component CIC
 			generic(D_WIDTH : integer range 1 to 32 := 16);
 			port(clk           : in  STD_LOGIC;
 				 rst           : in  STD_LOGIC;
-				 bs_ena        : in  STD_LOGIC;
-				 decim_ena     : in  STD_LOGIC;
-				 order        : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
-				 bs            : in  STD_LOGIC;
+				 bs_ena    : in  STD_LOGIC;
+				 decim_ena : in  STD_LOGIC;
+				 order    : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
+				 iir_ena : in  STD_LOGIC;
+				 iir_sr       : in unsigned(3 downto 0);
+				 bs        : in  STD_LOGIC;
 				 val           : out signed(D_WIDTH - 1 downto 0));
 		end component CIC;
 begin
@@ -104,11 +106,13 @@ begin
 		end if;
 	end process clk_divider;
 
-sig_resize : process (val_i) is
+sig_resize : process (val_i, post_divide) is
+variable discard_bits : integer range 0 to 15;
 begin
-	val0 <= resize(val_i(0)(D_WIDTH-1 downto D_DISCARD_BITS), D_OUT_WIDTH);
-	val1 <= resize(val_i(1)(D_WIDTH-1 downto D_DISCARD_BITS), D_OUT_WIDTH);
-	val2 <= resize(val_i(2)(D_WIDTH-1 downto D_DISCARD_BITS), D_OUT_WIDTH);
+	discard_bits := to_integer(post_divide);
+	val0 <= shift_right(val_i(0), discard_bits);
+	val1 <= shift_right(val_i(1), discard_bits);
+	val2 <= shift_right(val_i(2), discard_bits);
 end process;
 	
 -- Instantiation of Axi Bus Interface S_AXI
@@ -125,6 +129,9 @@ SDM_Decimator_v1_0_S_AXI_inst : entity work.SDM_Decimator_v1_0_S_AXI
 		order => order,
 		decim_max=>decim_max,
 		irq_ena=> irq_ena,
+		post_divide => post_divide,
+		iir_ena=> iir_ena,
+		iir_sr => iir_sr,
 		S_AXI_ACLK	=> s_axi_aclk,
 		S_AXI_ARESETN	=> s_axi_aresetn,
 		S_AXI_AWADDR	=> s_axi_awaddr,
@@ -160,6 +167,8 @@ SDM_Decimator_v1_0_S_AXI_inst : entity work.SDM_Decimator_v1_0_S_AXI
 				bs_ena        => clk_ena,
 				decim_ena     => decim_ena,
 				order         => order,
+				iir_ena       => iir_ena,
+				iir_sr        => iir_sr,
 				bs            => mic_bs(i),
 				val           => val_i(i)
 			);

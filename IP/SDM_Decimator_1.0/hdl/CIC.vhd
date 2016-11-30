@@ -39,6 +39,8 @@ entity CIC is
 		 bs_ena    : in  STD_LOGIC;
 		 decim_ena : in  STD_LOGIC;
 		 order    : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
+		 iir_ena : in  STD_LOGIC;
+		 iir_sr       : in unsigned(3 downto 0);
 		 bs        : in  STD_LOGIC;
 		 val       : out signed(D_WIDTH - 1 downto 0));
 end CIC;
@@ -142,7 +144,11 @@ begin
 				end case;
 				
 				-- IIR DC-block (1-z**-1)/(1-(1-2**-8)z**-1)
-				val_i <= cic_o - cic_o_pre + (val_i - shift_right(val_i, 8));
+				if iir_ena = '1' then
+					val_i <= cic_o - cic_o_pre + (val_i - shift_right(val_i, to_integer(iir_sr)));
+				else
+					val_i <= cic_o;
+				end if;
 			end if;
 		end if;
 	end process;
