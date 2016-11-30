@@ -1,0 +1,29 @@
+\documentclass[a4papper, 11pt]{article}
+
+\usepackage[T1]{fontenc}			%umlaute als eigene Zeichen
+\usepackage[latin1]{inputenc}	%umlaute erkennen
+\usepackage{lmodern}
+\usepackage{amsmath} 					%mathematischen Textsatz.
+\usepackage{amssymb}					%	-Erweiterte math. Sonderzeichen
+\usepackage{dsfont}						%	-Mengen			
+\usepackage[english]{babel}
+\usepackage{textgreek}
+\usepackage{siunitx}
+
+\usepackage[
+	pdftitle={SoundLoc -- Digital Microelectronics Project},						%Titel des PDF Dokuments.
+	pdfauthor={Stefan Kull, Roy Seitz, Marco Zollinger},									%Autor des PDF Dokuments.
+	pdfsubject={Sound localication useing cross correlation of three microphones},		%Thema des PDF Dokuments.
+	pdfcreator={LaTeX with hyperref and KOMA-Script},		%Erzeuger des PDF Dokuments.
+	pdfkeywords={Cross correlatin, CIC, IP, AXI4\_Lite interface},						%auch für PDF Dokumente indexiert
+	%	pdfpagemode=UseOutlines,								%Inhaltsverzeichnis anzeigen beim ffnen
+	pdfdisplaydoctitle=true,								%Dokumenttitel statt Dateiname anzeigen.
+	pdflang=en,												%Sprache des Dokuments.
+	plainpages=false,
+	hidelinks,												%keine Box um Links
+	%	bookmarksopen.											%toc beim Öffnen expandiert
+	pdfpagelabels
+]{hyperref}
+
+\title{-- Digital Microelectronics --- SoundLoc -- Localication of Soundsources by cross-correlating three $\Sigma\Delta$-microphon signals}
+\author{Stefan Kull, Roy Seitz, Marco Zollinger}
