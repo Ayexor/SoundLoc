@@ -1,0 +1,54 @@
+\documentclass[a4papper, 11pt]{article}
+
+\title{AXI4\_Lite Shift Register Controller}
+\author{Stefan Kull, Roy Seitz, Marco Zollinger}
+
+\usepackage[T1]{fontenc}			%umlaute als eigene Zeichen
+\usepackage[latin1]{inputenc}	%umlaute erkennen
+\usepackage{lmodern}
+\usepackage{amsmath} 					%mathematischen Textsatz.
+\usepackage{amssymb}					%	-Erweiterte math. Sonderzeichen
+\usepackage{dsfont}						%	-Mengen			
+\usepackage[english]{babel}
+\usepackage{textgreek}
+\usepackage{siunitx}
+\usepackage{caption}			%für \captionof
+\usepackage{fancyhdr}					%für \pagestyle{fancy} -> kopf/fusszeile über Textkörper hinaus
+
+
+\usepackage[
+	pdftitle={AXI4 Lite Shift Register Controller},						%Titel des PDF Dokuments.
+	pdfauthor={Stefan Kull, Roy Seitz, Marco Zollinger},									%Autor des PDF Dokuments.
+	pdfsubject={IP block to controll up to four dasy chained 74xx595-compliant shift registers},		%Thema des PDF Dokuments.
+	pdfcreator={LaTeX with hyperref and KOMA-Script},		%Erzeuger des PDF Dokuments.
+	pdfkeywords={74xx595, 595, AXI4\_Lite, AXI},						%auch für PDF Dokumente indexiert
+	%	pdfpagemode=UseOutlines,								%Inhaltsverzeichnis anzeigen beim ffnen
+	pdfdisplaydoctitle=true,								%Dokumenttitel statt Dateiname anzeigen.
+	pdflang=en,												%Sprache des Dokuments.
+	plainpages=false,
+	hidelinks,												%keine Box um Links
+	%	bookmarksopen.											%toc beim Öffnen expandiert
+	pdfpagelabels
+]{hyperref}
+
+\usepackage[
+	includeheadfoot,		%Kopf- und Fusszeilen verwenden
+	headheight=15pt,		%Höhe der Kopfzeile
+	left=20mm,				%abstand von Seitenraendern
+	right=20mm,				%
+	top=20mm,
+	bottom=20mm
+	]{geometry}
+
+%-------------------------------------------------
+%Kopf-/Fusszeile
+%-------------------------------------------------
+\pagestyle{fancy}					%stil der kopf/fusszeilen 
+\fancyhead{} 						% clear all header fields
+\fancyhead[L]{AXI4 Lite Shift Register Controller }
+\fancyhead[R]{\leftmark }
+\fancyfoot{} 						% clear all footer fields
+\fancyfoot[C]{Page \thepage}
+\fancypagestyle{plain}{				% plain redefinieren, damit wirklich alle seiten im gleichen stil sind (ausser titlepage)
+	\pagestyle{fancy}
+}

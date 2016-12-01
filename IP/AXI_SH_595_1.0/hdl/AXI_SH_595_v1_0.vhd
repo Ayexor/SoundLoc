@@ -23,7 +23,7 @@
 --							Dasy Chain connection. Data is shifted 
 --							out MSB first. If less then n*8bit are used
 --							remaining bits are undefined.
---	C_CLOCK_DEZIMATION:	The dezimation factor by which S_AXI_ACLK 
+--	C_CLOCK_DECIMATION:	The dezimation factor by which S_AXI_ACLK 
 --       				is divided. SH_CLK is half that Clock
 --	C_USE_OE_N:			Set to TRUE if OEn is needed. Otherwise
 --						OEn is driven to constant '0' 
@@ -40,7 +40,7 @@ entity AXI_SH_595_v1_0 is
 		-- Users to add parameters here
 		C_SH_DATA_WIDTH    : integer := 8;
 		C_USE_OE_N         : boolean := true;
-		C_CLOCK_DEZIMATION : integer := 100;
+		C_CLOCK_DECIMATION : integer := 100;
 		C_MSB_FIRST        : boolean := true;
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
@@ -97,7 +97,7 @@ architecture arch_imp of AXI_SH_595_v1_0 is
 	signal state, nState          : tState;
 	signal SH_cnt                 : unsigned(integer(floor(log2(real(C_SH_DATA_WIDTH)))) downto 0); -- counter for #bits left
 	signal fsm_clk_en             : std_logic;
-	signal clk_divider_cnt        : natural range 0 to C_CLOCK_DEZIMATION - 1;
+	signal clk_divider_cnt        : natural range 0 to C_CLOCK_DECIMATION - 1;
 
 begin
 
@@ -146,7 +146,7 @@ begin
 				fsm_clk_en      <= '0';
 				clk_divider_cnt <= 0;
 			else
-				if state = idle or clk_divider_cnt = C_CLOCK_DEZIMATION - 1 then
+				if state = idle or clk_divider_cnt = C_CLOCK_DECIMATION - 1 then
 					clk_divider_cnt <= 0;
 					fsm_clk_en      <= '1';
 				else
