@@ -1,0 +1,55 @@
+\documentclass[a4papper, 11pt]{article}
+
+\title{XCorr IP core}
+\author{Stefan Kull, Roy Seitz, Marco Zollinger}
+
+\usepackage[T1]{fontenc}			%umlaute als eigene Zeichen
+\usepackage[latin1]{inputenc}	%umlaute erkennen
+\usepackage{lmodern}
+\usepackage{amsmath} 					%mathematischen Textsatz.
+\usepackage{amssymb}					%	-Erweiterte math. Sonderzeichen
+\usepackage{dsfont}						%	-Mengen			
+\usepackage[english]{babel}
+\usepackage{textgreek}
+\usepackage{siunitx}
+\usepackage{caption}			%für \captionof
+\usepackage{fancyhdr}					%für \pagestyle{fancy} -> kopf/fusszeile über Textkörper hinaus
+\usepackage{xfrac} %for fractions of style "1/2"
+
+
+\usepackage[
+	pdftitle={XCorr IP core},						%Titel des PDF Dokuments.
+	pdfauthor={Stefan Kull, Roy Seitz, Marco Zollinger},									%Autor des PDF Dokuments.
+	pdfsubject={IP block to effectively calculate the cross-correlation between three microphon signals in realtime},		%Thema des PDF Dokuments.
+	pdfcreator={LaTeX with hyperref and KOMA-Script},		%Erzeuger des PDF Dokuments.
+	pdfkeywords={xcorr, cross correlation, correlation, realtime, AXI4 Lite, AXI},						%auch für PDF Dokumente indexiert
+	%	pdfpagemode=UseOutlines,								%Inhaltsverzeichnis anzeigen beim ffnen
+	pdfdisplaydoctitle=true,								%Dokumenttitel statt Dateiname anzeigen.
+	pdflang=en,												%Sprache des Dokuments.
+	plainpages=false,
+	hidelinks,												%keine Box um Links
+	%	bookmarksopen.											%toc beim Öffnen expandiert
+	pdfpagelabels
+]{hyperref}
+
+\usepackage[
+	includeheadfoot,		%Kopf- und Fusszeilen verwenden
+	headheight=15pt,		%Höhe der Kopfzeile
+	left=20mm,				%abstand von Seitenraendern
+	right=20mm,				%
+	top=20mm,
+	bottom=20mm
+	]{geometry}
+
+%-------------------------------------------------
+%Kopf-/Fusszeile
+%-------------------------------------------------
+\pagestyle{fancy}					%stil der kopf/fusszeilen 
+\fancyhead{} 						% clear all header fields
+\fancyhead[L]{SDM Decimator}
+\fancyhead[R]{\leftmark }
+\fancyfoot{} 						% clear all footer fields
+\fancyfoot[C]{Page \thepage}
+\fancypagestyle{plain}{				% plain redefinieren, damit wirklich alle seiten im gleichen stil sind (ausser titlepage)
+	\pagestyle{fancy}
+}
