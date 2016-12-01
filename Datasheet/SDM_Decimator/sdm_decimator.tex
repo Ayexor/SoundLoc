@@ -1,0 +1,250 @@
+\input{header.tex}
+
+\begin{document}
+\maketitle
+%\setcounter{tocdepth}{2}
+%\tableofcontents
+
+%\begin{table}[htbp]
+%	\centering
+%	\captionof{table}{Output signals of shift register controller}
+%	\label{tbl::signals}
+%	\begin{tabular}{|l|c|l|}
+%		\hline 
+%		A & B & C \\
+%		\hline 
+%	\end{tabular} 	
+%\end{table}
+
+\section{Overview}
+\label{sec:overview}
+
+This Document describes the functionality and usage of the SDM Decimator IP core.
+It is supplied as a complete, ready to use IP core.
+
+The project Soundloc contains three microphones that deliver a $\Sigma\Delta$-modulated bitstream.
+This IP generates the clock needed by the microphones and processes the received bitstreams.
+It outputs filtered and decimated signed values and a signals to indicate when new values are available.
+It is widely configurable by generic parameters at compile time as well as by software.
+See section \ref{sec::parameters} and \ref{sec::driver} for detailed information.
+
+The filter consists of a CIC filter, which is configurable up to 3rd order and a decimation up to its internal data width.
+This is describet in section \ref{sec::cic}.
+An additional IIR DC blocker with a configurable pole can be added to remove a DC component. 
+See section \ref{sec::iir} for detailed information.
+
+Finaly a post divider is implemented to scale the decimated data by powers of $\sfrac{1}{2}$.
+This can be used to eliminate problems caused by overflow in the following cross correlation that may occure with high order and decimation rate.
+The post divider is controlled by software and describet in section \ref{sec::post_divider}.
+
+\section{Parameter description}
+\label{sec::parameters}
+
+The IP core can be configured at compile time by several parameters, listed in table \ref{tbl::parameters}.
+\begin{table}[h]
+	\centering
+	\captionof{table}{Parameters for the SDM\_Decimator}
+	\label{tbl::parameters}
+	\begin{tabular}{|l|c|c|l|l|}
+		\hline 
+		Parameter & Default & Range & Type & description \\ 
+		\hline 
+		D\_WIDTH & 16 & 1\ldots32 & integer & Internal data width \\
+		\hline 
+		D\_OUT\_WIDTH & 16 & 1\ldots18 & integer & Output data width \\
+		\hline 
+		DIVIDE & 40 & 4\ldots1024 & integer & Decimation factor for bitstream clock \\
+		\hline 
+	\end{tabular} 
+\end{table}
+
+\newpage
+
+\section{Register description}
+\label{sec::registers}
+Table \ref{tbl::register_space} describes the available registers and their functionality.
+There are a total of five registers.
+Each can be acessed directly by their address or more confeniently by the software driver described in section \ref{sec::driver}.
+The individual bits in the status register are described in table  \ref{tbl::status_register}.
+
+\begin{table}[h]
+	\centering
+	\captionof{table}{Register Space}
+	\label{tbl::register_space}
+	\begin{tabular}{|l|c|c|l|l|}
+		\hline 
+		Name & Address offset & Mode & Description \\
+		\hline 
+		Status & 0x00 & R/W & Contains Statuzs and controll bits discribed in table \ref{tbl::status_register} \\
+		\hline 
+		Decimation & 0x04 & R/W & Contains the decimation rate of the CIC filter \\
+		\hline 
+		Value0 & 0x08 & R & Contains the actual, filtered value for microphon 2 \\
+		\hline 
+		Value1 & 0x0C & R & Contains the actual, filtered value for microphon 1 \\
+		\hline 
+		Value2 & 0x10 & R & Contains the actual, filtered value for microphon 3 \\
+		\hline 
+	\end{tabular} 
+\end{table}
+
+\begin{table}[h]
+	\centering
+	\captionof{table}{Status register}
+	\label{tbl::status_register}
+	\begin{tabular}{|l|c|l|}
+		\hline 
+		Bit		& Name 	& Description \\
+		\hline 
+		1:0		& order	& Binary coded order \\
+				& 		& "00" deactivates filter. Outputs are set to 0 \\
+		\hline 
+		2 		& irq\_ena	& Enables the interrupt signal\\
+		\hline 
+		3		& iir\_ena	& Enables the IIR DC blocker \\
+		\hline 
+		7:4		& iir\_sr	& Sets the pole of the IIR DC blocker \\
+		\hline 
+		11:8	& post\_divide & Sets the post divider \\
+		\hline 
+	\end{tabular} 
+\end{table}
+
+\section{Bitstream settings}
+\label{sec::bitstream}
+The Bitstream clock is derived from the AXI Interface clock, divided by the parameter DIVIDE.
+The microphones apply the new bits on fallign edge and the Filter reads them on rising edge.
+As the filter operate on signed values, the bitstream \{1,0\} is interpreted as \{+1, --1\}.
+
+\section{CIC filter}
+\label{sec::cic}
+
+This section explains the functionality of the implemented CIC filter.
+A CIC filter is fully charactericed by its order, the differential delay and the decimation rate.
+The resulting transferfunction is shown in equation \ref{eq::cic_tf}.
+
+\begin{align}
+	H_{CIC}(z) &= \frac{\left(1-z^{-RM}\right)^N}{\left(1-z^{-1}\right)^N} = \left[\sum_{k=0}^{RM-1}z^{-k}\right]^N\label{eq::cic_tf}
+\end{align}
+
+The differential Delay is fixed to $M=1$.
+The decimation rate $R$ and the order $N$ is set by software.
+See section \ref{sec::driver} for further information.
+The decimation is limited to the internal register width defined by paramter D\_WIDTH.
+A value greater than $2^{D\_WIDTH} - 1$ results in undefined behavior.
+The order can be set to 0\ldots3.
+\emph{Order 0 deactivates the filter and forces its outputs to 0.}
+
+With high decimation rates and orders, overflow can occure.
+The input is interpreted as 2bit signed value $\pm1$. 
+Therefore, to avoid overflow the the internal register width D\_WIDTH must be at least
+\begin{align}
+D\_WIDTH &\ge N\log_2{(RM)} + 1 \label{eq::cic_width}
+\end{align}
+
+\section{IIR DC blocker}
+\label{sec::iir}
+A simple IIR DC blocker is available to remove DC components due to microphon offsets.
+This may be needed as the correlation accumulats this DC component and may overflow.
+The filter has the transfer function given in equation \ref{eq::iir_tf}.
+The pole is set close to $z=1$ to optain a low cutoff frequency.
+The exact location is given in equation \ref{eq::iir_pole}.
+$iir\_sr\in\left[0,15\right]$ is set by software.
+\begin{align}
+	H_{IIR} &= \frac{1-z^{-1}}{1-\left(1-2^{-iir\_sr}\right)z^{-1}} \label{eq::iir_tf}\\
+	z_p &= \frac{2^{iir\_sr}-1}{2^{iir\_sr}} \label{eq::iir_pole}
+\end{align}
+
+\section{Post divider}
+\label{sec::post_divider}
+
+The post divider can divide the internaly calculated values by powers of two.
+The high gain from the CIC filter can therefor be scaled.
+This is handy if the internal width is choosen greater than the output width.
+The divider is implemented as a simple arithmetic shift right by post\_divider $\in\left[0\ldots15\right]$.
+Thus setting post\_divider to 0 disables the divider.
+The output value results in
+\begin{align}
+	out &= out_{internal}\cdot2^{-post\_divider}
+\end{align}
+
+\section{Driver}
+\label{sec::driver}
+
+The IP core comes along with a driver to allow easy access by software.
+There are two categories of functions, high and low level.
+The usage of high level funtions is recomended.
+
+\subsection{High level functions}
+A typical use case with high level functions is as follows:
+\begin{itemize}
+	\item call SDM\_DECIM\_setStatus(baseaddr, mask) to initialize the IP core. \\
+		This sets the conten of the status register to mask. See section \ref{sec::registers} for further information.\\
+		Typically: SDM\_DECIM\_setStatus(SDM\_DECIM\_BASEADDR, 0x307).
+	\item Call SDM\_DECIM\_setDecimation(baseaddr, decimation). \\
+		This sets the decimation rate to decimation. decimation is typically about 30.
+	\item If the raw values are of interest, call SDM\_DECIM\_getValue(baseaddr, mic).\\
+		This returns a 32 bit signed integer that corresponds to the microphon mic. \\
+		mic can be one of SDM\_DECIMATOR\_MICx, with $x\in\{1,2,3\}$.
+\end{itemize}
+
+\subsection{Low level functions}
+The core can also be used by addressing the registers directly.
+For this purpose two lowlevel functions are available.
+These functions are implemented as macros and should only be used if realy necessary.
+The definitions from table \ref{tbl::software_defines} can be used to easily access these Registers.
+Care must be taken to not confuse the microphones. 
+On the PCB thei are nuberd from 1 to 3 but in hardware the numbering goes from 0 to 2.
+The macros SDM\_DECIMATOR\_MICx are provided for mapping the indices.
+
+\begin{itemize}
+	\item SDM\_DECIM\_mWriteReg(BaseAddress, RegOffset, Data) \\
+		Writes data to the specified Register. 
+	\item SDM\_DECIM\_mReadReg(BaseAddress, RegOffset) \\		
+		Read the content of the specified register.
+\end{itemize}
+
+\subsection{Defined constants}
+
+\begin{table}[h]
+	\centering
+	\captionof{table}{Software defined constants}
+	\label{tbl::software_defines}
+	\begin{tabular}{l|l}
+		Name & Value \\
+		\hline 
+		SDM\_DECIMATOR\_S\_AXI\_REG0\_STATUS\_OFFSET & 0 \\
+		\hline 
+		SDM\_DECIMATOR\_S\_AXI\_REG1\_DECIMATION\_OFFSET & 4 \\
+		\hline 
+		SDM\_DECIMATOR\_S\_AXI\_REG2\_VALUE0\_OFFSET & 8 \\
+		\hline 
+		SDM\_DECIMATOR\_S\_AXI\_REG3\_VALUE1\_OFFSET & 12 \\
+		\hline 
+		SDM\_DECIMATOR\_S\_AXI\_REG4\_VALUE2\_OFFSET & 16 \\
+		\hline 
+		SDM\_DECIMATOR\_MIC1 & 1 \\
+		\hline 
+		SDM\_DECIMATOR\_MIC2 & 0 \\
+		\hline 
+		SDM\_DECIMATOR\_MIC3 & 2 \\
+		\hline 
+	\end{tabular} 
+	
+\end{table}
+
+
+\section{Test and verification}
+\label{sec::test}
+
+The core can easily be simulated by using the AXI Trafic generator IP from Xilinx and feeding some value to the bitstream inputs.
+Therefore no additional simulation files are available.
+Software verification can be done by write and read data to the status and decimation register.
+
+\section{Compatibility and Licence}
+The core is tested under Vivado version 2016.2 and on Artix7 and Zynq7 FPGA.
+Since the core does not use any hardware specific resources, it should run on every other FPGA as well.
+However, this is not tested and may require changes to the core hdl or driver files.
+The core is supplied under no licence or copy right but belonges to the intellectual property of the authors.
+
+\end{document}

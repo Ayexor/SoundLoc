@@ -44,14 +44,14 @@ unsigned int SDM_DECIM_getDecimation(int BaseAddress){
 /*
  * Get decimated value of mic Mic
  */
-int SDM_DECIM_getValue(int BaseAddress, int Mic){
-	switch (Mic) {
+int SDM_DECIM_getValue(int BaseAddress, int mic){
+	switch (mic) {
 		case 0:
 			return SDM_DECIMATOR_mReadReg(BaseAddress, SDM_DECIMATOR_S_AXI_REG2_VALUE0_OFFSET);
 		case 1:
-			return SDM_DECIMATOR_mReadReg(BaseAddress, SDM_DECIMATOR_S_AXI_REG2_VALUE1_OFFSET);
+			return SDM_DECIMATOR_mReadReg(BaseAddress, SDM_DECIMATOR_S_AXI_REG3_VALUE1_OFFSET);
 		case 2:
-			return SDM_DECIMATOR_mReadReg(BaseAddress, SDM_DECIMATOR_S_AXI_REG2_VALUE2_OFFSET);
+			return SDM_DECIMATOR_mReadReg(BaseAddress, SDM_DECIMATOR_S_AXI_REG4_VALUE2_OFFSET);
 	}
 	return 0;
 }

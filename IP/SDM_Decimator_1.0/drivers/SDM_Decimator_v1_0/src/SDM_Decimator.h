@@ -40,6 +40,9 @@
 #define SDM_DECIMATOR_S_AXI_REG2_VALUE0_OFFSET 8
 #define SDM_DECIMATOR_S_AXI_REG2_VALUE1_OFFSET 12
 #define SDM_DECIMATOR_S_AXI_REG2_VALUE2_OFFSET 16
+#define SDM_DECIMATOR_MIC1 1
+#define SDM_DECIMATOR_MIC2 0
+#define SDM_DECIMATOR_MIC3 2
 
 /**************************** Type Definitions *****************************/
 /**
