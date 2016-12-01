@@ -22,6 +22,9 @@ entity SDM_Decimator_v1_0_S_AXI is
 		val1 : in signed(D_WIDTH-1 downto 0);
 		val2 : in signed(D_WIDTH-1 downto 0);
 		irq_ena : out std_logic;
+		iir_ena : out std_logic;
+		iir_sr: out unsigned(3 downto 0);
+		post_divide: out unsigned(3 downto 0);
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 
@@ -128,6 +131,9 @@ begin
 	-- Add user logic here
 	order 							<= slv_reg0(1 downto 0);
 	irq_ena							<= slv_reg0(2);
+	iir_ena						    <= slv_reg0(3);
+	iir_sr							<= unsigned(slv_reg0(7 downto 4));
+	post_divide						<= unsigned(slv_reg0(11 downto 8));
 	decim_max 						<= unsigned(slv_reg1(D_WIDTH-1 downto 0));
 	slv_reg2 	<= std_logic_vector(resize(val0, C_S_AXI_DATA_WIDTH));
 	slv_reg3 	<= std_logic_vector(resize(val1, C_S_AXI_DATA_WIDTH));

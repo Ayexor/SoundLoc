@@ -9,8 +9,6 @@ proc init_gui { IPINST } {
   set_property tooltip {Defines the width of output data. Internal values are truncated if output width is less than internal width.} ${D_OUT_WIDTH}
   set DIVIDE [ipgui::add_param $IPINST -name "DIVIDE" -parent ${Page_0}]
   set_property tooltip {Divide axi clk by this rate to generate bitstream clock} ${DIVIDE}
-  set D_DISCARD_BITS [ipgui::add_param $IPINST -name "D_DISCARD_BITS" -parent ${Page_0}]
-  set_property tooltip {Number of bits to discard. This is equal to divide the Result by a power of 2} ${D_DISCARD_BITS}
 
 
 }
@@ -21,15 +19,6 @@ proc update_PARAM_VALUE.DIVIDE { PARAM_VALUE.DIVIDE } {
 
 proc validate_PARAM_VALUE.DIVIDE { PARAM_VALUE.DIVIDE } {
 	# Procedure called to validate DIVIDE
-	return true
-}
-
-proc update_PARAM_VALUE.D_DISCARD_BITS { PARAM_VALUE.D_DISCARD_BITS } {
-	# Procedure called to update D_DISCARD_BITS when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.D_DISCARD_BITS { PARAM_VALUE.D_DISCARD_BITS } {
-	# Procedure called to validate D_DISCARD_BITS
 	return true
 }
 
@@ -111,10 +100,5 @@ proc update_MODELPARAM_VALUE.D_OUT_WIDTH { MODELPARAM_VALUE.D_OUT_WIDTH PARAM_VA
 proc update_MODELPARAM_VALUE.DIVIDE { MODELPARAM_VALUE.DIVIDE PARAM_VALUE.DIVIDE } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.DIVIDE}] ${MODELPARAM_VALUE.DIVIDE}
-}
-
-proc update_MODELPARAM_VALUE.D_DISCARD_BITS { MODELPARAM_VALUE.D_DISCARD_BITS PARAM_VALUE.D_DISCARD_BITS } {
-	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.D_DISCARD_BITS}] ${MODELPARAM_VALUE.D_DISCARD_BITS}
 }
 
