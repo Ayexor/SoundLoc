@@ -14,10 +14,7 @@ The vector $x$ directing to the source location in cartesian coordinates can be 
 To calculate the signal delay in cartesian coordinates, $Bx$ needs to be left multiplied with $B^{-1}$, resulting in the right side of  (\ref{eq::base_transform}).
 
 \begin{align}
-	{Tau}_{0n} &\propto \overrightarrow{k} \cdot \overrightarrow{M_nM_0} \quad n\in\{1,2\}\label{eq::inner_product}
-\end{align}
-
-\begin{align}
+	{Tau}_{0n} \propto \overrightarrow{k} \cdot &\overrightarrow{M_nM_0} \quad n\in\{1,2\}\label{eq::inner_product} \\
 	\tau = Bx \quad &\Rightarrow \quad x = B^{-1}\tau \label{eq::base_transform}\\
 	\begin{pmatrix} {Tau}_{01} \\ {Tau}_{02}\end{pmatrix}
 		=  \begin{pmatrix} 1 & \cos(\frac{\pi}{3}) \\ 0 & \sin(\frac{\pi}{3})\end{pmatrix} \begin{pmatrix} x \\ y\end{pmatrix}

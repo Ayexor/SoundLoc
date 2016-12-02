@@ -1,12 +1,12 @@
 \section{Overview}
 Sound travels at a speed of approximately $c\approx \SI{340}{\meter\per\s}$.
-Using multiple microphones at well known locations allows calculating the direction from which the sound originated.
+Using multiple microphones at known locations allows calculating the direction from which the sound originated.
 Three microphones are placed in an equilateral triangle of 42 mm side length.
 A circle of 16 LEDs is placed on the same PCB to indicate the direction.
-Because only the direction in two dimensions is of interest, three microphones are sufficient.
+Since only the direction in two dimensions is of interest, three microphones are sufficient.
 The microphones operate with a clock of approximately \SI{3.2}{\mega\hertz} for the $\Sigma\Delta$-modulation.
 They output their bitstream directly without any digital filtering or decimation.
-Figure \ref{fig::top_block} shows a block diagram of the whole system.
+Figure \ref{fig::system} shows a block diagram of the whole system.
 
 The bitstream is filtered by an IP block, configurable by software via AXI4 Lite interface.
 This block contains a CIC filter of configurable order and decimation factor with a differential delay of $M=1$.
