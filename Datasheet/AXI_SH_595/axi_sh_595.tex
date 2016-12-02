@@ -6,7 +6,7 @@
 %\tableofcontents
 
 \section{Overview}
-This Document describes the functionality and usage of the AXI4\_Lite 74xx595 Shift Register Controller.
+This Document describes functionality and usage of the AXI4\_Lite 74xx595 Shift Register Controller.
 It is supplied as a complete, ready to use IP block.
 
 The controller allows easy access to xx595 compliant shift registers.
@@ -24,19 +24,19 @@ See section \ref{sec::parameters} for detailed information.
 	\label{tbl::signals}
 	\begin{tabular}{|l|c|l|}
 		\hline 
-		SH Output Signal & Reset / Idle value & Description \\ 
+		SH output signal & Reset / Idle value & Description \\ 
 		\hline 
-		rstn & 1 & Low active shif register master reset signal \\ 
+		rstn & 1 & Low active shift register master reset signal \\ 
 		\hline 
-		clk & 1 & Shift register data clock. \\
+		clk & 1 & Shift register data clock \\
 		& & Data is shifted in on rising edge \\ 
 		\hline 
-		str & 1 & Sift register strobe signal. \\
+		str & 1 & Shift register strobe signal \\
 		 & & Data is load into output register on rising edge\\ 
 		\hline 
 		data & 0 & Shift register serial data in \\ 
 		\hline 
-		oen & 1 & Optional low active output enable. \\
+		oen & 1 & Optional low active output enable \\
 		& & If this signal is not used, it is set to constant 0 \\ 
 		\hline 
 	\end{tabular} 
@@ -54,15 +54,15 @@ The IP core can be configured at compile time by several parameters, listed in t
 	\label{tbl::parameters}
 	\begin{tabular}{|l|c|c|l|l|}
 		\hline 
-		Parameter & Default & Range & Type & description \\ 
+		Parameter & Default & Range & Type & Description \\ 
 		\hline 
 		C\_SH\_DATA\_WIDTH & 8 & 1\ldots32 & integer & Length of the Shift register \\
 		\hline 
-		C\_USE\_OE\_N & true & \{treu, false\} & boolean & Use output enable signal \\
+		C\_USE\_OE\_N & true & \{true, false\} & boolean & Use output enable signal \\
 		\hline 
 		C\_CLOCK\_DECIMATION & 100 &  & integer & Decimation factor for data clock \\
 		\hline 
-		C\_MSB\_FIRST & true & \{treu, false\} & boolean & Shift Data out MSB first \\
+		C\_MSB\_FIRST & true & \{true, false\} & boolean & Shift Data out MSB first \\
 		\hline 
 	\end{tabular} 
 \end{table}
@@ -70,7 +70,7 @@ The IP core can be configured at compile time by several parameters, listed in t
 \section{Register description}
 \label{sec::registers}
 Table \ref{tbl::register_space} describes the available registers and their functionality.
-This registers can be acessed directly by their address or more confeniently by the software driver described in section \ref{sec::driver}.
+These registers can be accessed directly by their address or more conveniently by the software driver described in section \ref{sec::driver}.
 
 \begin{table}[h]
 	
@@ -80,13 +80,13 @@ This registers can be acessed directly by their address or more confeniently by 
 		\hline 
 		Name & Address offset & Mode & Description \\
 		\hline 
-		Data & 0x0 & R/W & Contains LSB alligned data to write to the shift register \\
+		Data & 0x0 & R/W & Contains LSB aligned data to write to the shift register \\
 		\hline 
 		Start/Ready & 0x4 & R/W & Write '1' start programming of shift register \\
 		 & & & Read returns '1' if controller is ready to accept new data \\
 		\hline 
 		 Status & 0x8 & R/W & Bit 0: Enable controller \\
-		 & & & Bit 1: Low active output enable (if OEn is used) \\
+		 & & & Bit 1: Low active output enable (if oen is used) \\
 		\hline 
 	\end{tabular} 
 	
@@ -97,13 +97,13 @@ This registers can be acessed directly by their address or more confeniently by 
 
 The IP core comes along with a driver to allow easy access by software.
 There are two categories of functions, high and low level.
-The usage of high level funtions is recomended.
+The usage of high level functions is recommended.
 
 \subsection{High level functions}
 A typical use case with high level functions is as follows:
 \begin{itemize}
 	\item call AXI\_SH\_595\_init(baseaddr, mask) to initialize the controller. \\
-		This sets the conten of the status register to mask. \\
+		This sets the content of the status register to mask. \\
 		Typically: AXI\_SH\_595\_init(AXI\_SH\_595\_BASEADDR, 0x1);
 	\item Programm shift register by calling AXI\_SH\_595\_programm\_sh(baseaddr, data) \\
 		This writes data to the data register and starts the programming sequence.
@@ -113,8 +113,8 @@ A typical use case with high level functions is as follows:
 
 \subsection{Low level functions}
 The core can also be used by addressing the registers directly.
-For this purpose two lowlevel functions are available.
-These functions are implemented as macros and should only be used if realy necessary.
+For this purpose two low-level functions are available.
+These functions are implemented as macros and should only be used if really necessary.
 The definitions from table \ref{tbl::software_defines} can be used to easily access these Registers.
 
 \begin{itemize}
@@ -156,6 +156,6 @@ Software verification can be done by write and read data to the data register, u
 The core is tested under Vivado version 2016.2 and on Artix7 and Zynq7 FPGA.
 Since the core does not use any hardware specific resources, it should run on every other FPGA as well.
 However, this is not tested and may require changes to the core hdl or driver files.
-The core is supplied under no licence or copy right but belonges to the intellectual property of the authors.
+The core is supplied under no licence or copy right but belongs to the intellectual property of the authors.
 
 \end{document}
