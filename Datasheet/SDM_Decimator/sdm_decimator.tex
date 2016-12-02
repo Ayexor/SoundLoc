@@ -28,13 +28,13 @@ It outputs filtered and decimated signed values and an interrupt to indicate whe
 It is widely configurable by generic parameters at compile time as well as by software.
 See section \ref{sec::parameters} and \ref{sec::driver} for detailed information.
 
-The filter consists of a CIC filter, which is configurable up to 3rd order and a decimation up to its internal data width.
+The filter consists of a CIC filter, which is configurable up to 3rd order and a decimation factor up to its internal data width.
 This is described in section \ref{sec::cic}.
 An additional IIR DC blocker with a configurable pole can be added to remove a DC component. 
 See section \ref{sec::iir} for detailed information.
 
 Finally a post divider is implemented to scale the decimated data by powers of $\sfrac{1}{2}$.
-This can be used to eliminate problems caused by overflow in the following cross-correlation that may occur with high order and decimation.
+This can be used to eliminate problems caused by overflow in the following cross-correlation that may occur with high order and decimation factor.
 The post divider is controlled by software and described in section \ref{sec::post_divider}.
 
 \section{Parameter description}
@@ -77,7 +77,7 @@ The individual bits in the status register are described in table  \ref{tbl::sta
 		\hline 
 		Status & 0x00 & R/W & Contains Status and control bits described in table \ref{tbl::status_register} \\
 		\hline 
-		Decimation & 0x04 & R/W & Contains the decimation of the CIC filter \\
+		Decimation & 0x04 & R/W & Contains the decimation factor of the CIC filter \\
 		\hline 
 		Value0 & 0x08 & R & Contains the actual, filtered value for microphone 2 \\
 		\hline 
@@ -120,7 +120,7 @@ As the filter operates on signed values, the bitstream \{1,0\} is interpreted as
 \label{sec::cic}
 
 This section explains the functionality of the implemented CIC filter.
-A CIC filter is fully characterized by its order, the differential delay and the decimation.
+A CIC filter is fully characterized by its order, the differential delay and the decimation factor.
 The resulting transfer function is shown in equation \ref{eq::cic_tf}.
 
 \begin{align}
@@ -128,14 +128,14 @@ The resulting transfer function is shown in equation \ref{eq::cic_tf}.
 \end{align}
 
 The differential Delay is fixed to $M=1$.
-The decimation $R$ and the order $N$ are set by software.
+The decimation factor $R$ and the order $N$ are set by software.
 See section \ref{sec::driver} for further information.
-The decimation is limited to the internal register width defined by parameter D\_WIDTH.
+The decimation factor is limited to the internal register width defined by parameter D\_WIDTH.
 A value greater than $2^{D\_WIDTH} - 1$ results in undefined behavior.
 The order can be set to 0\ldots3.
 \emph{Order 0 deactivates the filter and forces its outputs to 0.}
 
-With high decimation and orders, overflow can occur.
+With high decimation factors and orders, overflow can occur.
 The input is interpreted as 2bit signed value $\pm1$. 
 Therefore, to avoid overflow the internal register width D\_WIDTH must be at least
 \begin{align}
@@ -182,7 +182,7 @@ A typical use case with high level functions is as follows:
 		This sets the content of the status register to mask. See section \ref{sec::registers} for further information.\\
 		Typically: SDM\_DECIM\_setStatus(SDM\_DECIM\_BASEADDR, 0x307).
 	\item Call SDM\_DECIM\_setDecimation(baseaddr, decimation). \\
-		This sets the decimation. Typical values are about 30.
+		This sets the decimation factor. Typical values are about 30.
 	\item If the raw values are of interest, call SDM\_DECIM\_getValue(baseaddr, mic).\\
 		This returns a 32 bit signed integer that corresponds to the microphone mic. \\
 		mic can be one of SDM\_DECIMATOR\_MICx, with $x\in\{1,2,3\}$.
@@ -239,7 +239,7 @@ The macros SDM\_DECIMATOR\_MICx are provided for mapping the indices.
 
 The core can easily be simulated by using the AXI Trafic generator IP from Xilinx and feeding some value to the bitstream inputs.
 Therefore no additional simulation files are available.
-Software verification can be done by writing and reading data to the status and decimation registers.
+Software verification can be done by writing and reading data to the status and decimation factor registers.
 
 \section{Compatibility and License}
 The core is tested under Vivado version 2016.2 and on Artix7 and Zynq7 FPGA.
