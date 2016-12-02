@@ -12,12 +12,12 @@ This block contains a CIC filter of configurable order and decimation rate with 
 An additional IIR filter can be enabled to remove the DC component of the signals.
 See Section \ref{sec::filter} for further information.
 
-From the decimated Data, the cross-correlation is calculated to finde the delay between the microphones.
+From the decimated Data, the cross-correlation is calculated to find the delay between the microphones.
 This is done by another IP block, also configurable over AXI4 Lite.
 See section \ref{sec::xcorr} for further information.
 
 These delays are read by the CPU, which calculates the direction. 
-In basically consists of a base transform from microphon in cartesian coordinate system and calculatin the invers tangens of the coordinates.
+In basically consists of a base transform from microphone in a cartesian coordinate system and calculating the inverse tangens of the coordinates.
 This is described in section \ref{sec::software}.
 
 The Angle is mapped to one of the 16 LED and then fed to another IP block that displays the direction.

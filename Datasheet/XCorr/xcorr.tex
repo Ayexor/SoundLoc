@@ -28,7 +28,7 @@ High level software support will be added in a future release.
 The project Soundloc contains three microphones that deliver a $\Sigma\Delta$-modulated bitstream.
 This is processed by another IP core SDM\_DECIMATOR, that delivers the signed microphone data and a signal that indicates new values.
 
-This IP core than calculates the cross correlation between the three micropone signals.
+This IP core then calculates the cross correlation between the three microphone signals.
 To do this efficiently, the correlation is calculated iteratively, using fast block ram and DSP slices.
 Detailed information to each stage is provided in the following sections.
 
