@@ -22,9 +22,9 @@
 This Document describes the functionality and usage of the SDM Decimator IP core.
 It is supplied as a complete, ready to use IP core.
 
-The project Soundloc contains three microphones that deliver a $\Sigma\Delta$-modulated bitstream.
+The project Soundloc contains three digital microphones that deliver a $\Sigma\Delta$-modulated (PDM) bitstream.
 This IP generates the clock needed by the microphones and processes the received bitstreams.
-It outputs filtered and decimated signed values and a signals to indicate when new values are available.
+It outputs filtered and decimated signed values and an interrupt to indicate when new values are available.
 It is widely configurable by generic parameters at compile time as well as by software.
 See section \ref{sec::parameters} and \ref{sec::driver} for detailed information.
 
@@ -34,7 +34,7 @@ An additional IIR DC blocker with a configurable pole can be added to remove a D
 See section \ref{sec::iir} for detailed information.
 
 Finally a post divider is implemented to scale the decimated data by powers of $\sfrac{1}{2}$.
-This can be used to eliminate problems caused by overflow in the following cross correlation that may occur with high order and decimation rate.
+This can be used to eliminate problems caused by overflow in the following cross-correlation that may occur with high order and decimation.
 The post divider is controlled by software and described in section \ref{sec::post_divider}.
 
 \section{Parameter description}
@@ -53,7 +53,7 @@ The IP core can be configured at compile time by several parameters, listed in t
 		\hline 
 		D\_OUT\_WIDTH & 16 & 1\ldots18 & integer & Output data width \\
 		\hline 
-		DIVIDE & 40 & 4\ldots1024 & integer & Decimation factor for bitstream clock \\
+		DIVIDE & 40 & 4\ldots1024 & integer & Prescaler for bitstream clock \\
 		\hline 
 	\end{tabular} 
 \end{table}
@@ -77,7 +77,7 @@ The individual bits in the status register are described in table  \ref{tbl::sta
 		\hline 
 		Status & 0x00 & R/W & Contains Status and control bits described in table \ref{tbl::status_register} \\
 		\hline 
-		Decimation & 0x04 & R/W & Contains the decimation rate of the CIC filter \\
+		Decimation & 0x04 & R/W & Contains the decimation of the CIC filter \\
 		\hline 
 		Value0 & 0x08 & R & Contains the actual, filtered value for microphone 2 \\
 		\hline 
@@ -112,15 +112,15 @@ The individual bits in the status register are described in table  \ref{tbl::sta
 
 \section{Bitstream settings}
 \label{sec::bitstream}
-The Bitstream clock is derived from the AXI Interface clock, divided by the parameter DIVIDE.
+The Bitstream clock is derived from the AXI Interface clock, prescaled by the parameter DIVIDE.
 The microphones apply the new bits on falling edge and the Filter reads them on rising edge.
-As the filter operate on signed values, the bitstream \{1,0\} is interpreted as \{+1, --1\}.
+As the filter operates on signed values, the bitstream \{1,0\} is interpreted as \{+1, --1\}.
 
 \section{CIC filter}
 \label{sec::cic}
 
 This section explains the functionality of the implemented CIC filter.
-A CIC filter is fully characterized by its order, the differential delay and the decimation rate.
+A CIC filter is fully characterized by its order, the differential delay and the decimation.
 The resulting transfer function is shown in equation \ref{eq::cic_tf}.
 
 \begin{align}
@@ -128,23 +128,23 @@ The resulting transfer function is shown in equation \ref{eq::cic_tf}.
 \end{align}
 
 The differential Delay is fixed to $M=1$.
-The decimation rate $R$ and the order $N$ is set by software.
+The decimation $R$ and the order $N$ are set by software.
 See section \ref{sec::driver} for further information.
 The decimation is limited to the internal register width defined by parameter D\_WIDTH.
 A value greater than $2^{D\_WIDTH} - 1$ results in undefined behaviour.
 The order can be set to 0\ldots3.
 \emph{Order 0 deactivates the filter and forces its outputs to 0.}
 
-With high decimation rates and orders, overflow can occur.
+With high decimation and orders, overflow can occur.
 The input is interpreted as 2bit signed value $\pm1$. 
-Therefore, to avoid overflow the the internal register width D\_WIDTH must be at least
+Therefore, to avoid overflow the internal register width D\_WIDTH must be at least
 \begin{align}
 D\_WIDTH &\ge N\log_2{(RM)} + 1 \label{eq::cic_width}
 \end{align}
 
 \section{IIR DC blocker}
 \label{sec::iir}
-A simple IIR DC blocker is available to remove DC components due to microphone offsets.
+A simple IIR DC blocker is available to remove the DC component due to microphone offsets.
 This may be needed as the correlation accumulates this DC component and may overflow.
 The filter has the transfer function given in equation \ref{eq::iir_tf}.
 The pole is set close to $z=1$ to obtain a low cutoff frequency.
@@ -182,7 +182,7 @@ A typical use case with high level functions is as follows:
 		This sets the content of the status register to mask. See section \ref{sec::registers} for further information.\\
 		Typically: SDM\_DECIM\_setStatus(SDM\_DECIM\_BASEADDR, 0x307).
 	\item Call SDM\_DECIM\_setDecimation(baseaddr, decimation). \\
-		This sets the decimation rate to decimation. decimation is typically about 30.
+		This sets the decimation. Typical values are about 30.
 	\item If the raw values are of interest, call SDM\_DECIM\_getValue(baseaddr, mic).\\
 		This returns a 32 bit signed integer that corresponds to the microphone mic. \\
 		mic can be one of SDM\_DECIMATOR\_MICx, with $x\in\{1,2,3\}$.
@@ -199,7 +199,7 @@ The macros SDM\_DECIMATOR\_MICx are provided for mapping the indices.
 
 \begin{itemize}
 	\item SDM\_DECIM\_mWriteReg(BaseAddress, RegOffset, Data) \\
-		Writes data to the specified Register. 
+		Write data to the specified Register. 
 	\item SDM\_DECIM\_mReadReg(BaseAddress, RegOffset) \\		
 		Read the content of the specified register.
 \end{itemize}
@@ -239,12 +239,12 @@ The macros SDM\_DECIMATOR\_MICx are provided for mapping the indices.
 
 The core can easily be simulated by using the AXI Trafic generator IP from Xilinx and feeding some value to the bitstream inputs.
 Therefore no additional simulation files are available.
-Software verification can be done by write and read data to the status and decimation register.
+Software verification can be done by writing and reading data to the status and decimation registers.
 
 \section{Compatibility and Licence}
 The core is tested under Vivado version 2016.2 and on Artix7 and Zynq7 FPGA.
 Since the core does not use any hardware specific resources, it should run on every other FPGA as well.
 However, this is not tested and may require changes to the core hdl or driver files.
-The core is supplied under no licence or copy right but belongs to the intellectual property of the authors.
+The core is supplied under no licence or copyright but is the intellectual property of the authors.
 
 \end{document}
