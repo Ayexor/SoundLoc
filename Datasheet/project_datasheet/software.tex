@@ -2,10 +2,10 @@
 \label{sec::software}
 
 One ARM Cortex A9 core is used in this project.
-At first it configures the Filter block by setting order, decimation, IIR pole and post division factor.
-The filter delivers its values directly to the cross correlation.
-This informs the Cortex A9 each time recalculation of the cross correlation is finished.
+At first it configures the filter block by setting order, decimation, IIR pole location and post division factor.
+The filter delivers its values directly to the cross correlation, which again informs the Cortex A9 each time recalculation of the cross correlation is finished.
 The Cortex A9 then reads the data and searches for the maximum.
+
 The cross correlation is maximal when the signals are equal.
 Thus the Tau at which the maximal value occurs is proportional to the signal delay caused by finite speed of sound.
 
