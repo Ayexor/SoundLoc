@@ -1,0 +1,56 @@
+\input{picture_header}
+
+
+%coordinates
+\newcommand{\xtau}	{0}
+\newcommand{\xfa}	{1.4}
+\newcommand{\xmaca}	{2.8}
+\newcommand{\xfb}	{4.2}
+\newcommand{\xmacb}	{5.6}
+\newcommand{\xsa}	{7}
+
+\newcommand{\yt}{2.8}
+\newcommand{\ym}{1.4}
+\newcommand{\yb}{0.0}
+
+\begin{document}
+	
+	
+	\tikzstyle{block} = [draw, fill=\blueFill, rectangle, minimum height=1cm, minimum width=1cm]
+%	\tikzstyle{sum} = [draw, fill=\blueFill, circle, node distance=1cm]
+	\tikzstyle{input} = [coordinate]
+	\tikzstyle{output} = [coordinate]
+%	\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+	
+
+	\begin{tikzpicture}
+%	\draw[style=my help lines] (0,0) grid (2,2);
+
+	%top
+	\draw (\xtau, \yt) node[block](tau){Tau};
+	\draw (\xfa, \yt) node[block](f1){$z^{-1}$};
+	\draw (\xfb, \yt) node[block](f2){$z^{-1}$};
+	%mid
+	\draw (\xfa, \ym) node[block](FA){FA};
+	\draw (\xfb, \ym) node[block](FB){FB};
+	%bottom
+	\draw (\xmaca, \yb) node[block](MACA){DSP};
+	\draw (\xfb, \yb) node[block](f3){$z^{-1}$};
+	\draw (\xmacb, \yb) node[block](MACB){DSP};
+	\draw (\xsa, \yb) node[block](SA){SA};
+	
+	%arrows
+	\draw[->] (tau) |- (FA);
+	\draw[->] (FA) |- (MACA);
+	\draw[->] (MACA) -- (f3);
+	\draw[->] (f3)  -- (MACB);
+	\draw[->] (MACB) -- (SA);
+	\draw[->] (tau) -- (f1);
+	\draw[->] (f1) -- (f2);
+	\draw[->] (f2) -| (SA);
+	\draw[->] (\xmaca, \yt) -- (\xmaca, \ym)-- (FB);
+	\draw[->] (FB) -| (MACB);
+	
+	\end{tikzpicture}
+	
+\end{document}

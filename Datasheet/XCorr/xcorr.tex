@@ -5,17 +5,6 @@
 %\setcounter{tocdepth}{2}
 %\tableofcontents
 
-%\begin{table}[htbp]
-%	\centering
-%	\captionof{table}{Output signals of shift register controller}
-%	\label{tbl::signals}
-%	\begin{tabular}{|l|c|l|}
-%		\hline 
-%		A & B & C \\
-%		\hline 
-%	\end{tabular} 	
-%\end{table}
-
 \section{Overview}
 \label{sec:overview}
 
@@ -98,13 +87,21 @@ The Address is calculated according to equation \ref{eq:addr_calc}.
 
 \section{Cross correlation}
 \label{sec::cic}
+
 This block calculates the cross correlation xcorr01 and xcorr02.
-the first index indicates the reference microphone, which is fixed to mic0 (Microphone 2 on PCB).
+The first index indicates the reference microphone, which is fixed to mic0 (Microphone 2 on PCB).
 The correlation is recalculated each time a new value is available.
 The recalculation takes $N_{Tau}+4$ clock cycles.
 An interrupt is asserted each time the cross correlation has been recalculated.
 
 \subsection{Implementation}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = 1.5]{block_diagram/xcorr.pdf}
+	\captionof{figure}{Block diagram of pipelined calculation of cross correlation}
+	\label{fig::block_diag}
+\end{figure}
+
 The cross correlation of two discrete signals is defined per equation \ref{eq::xcorr}.
 Since only $N_{Sample}$ values are stored and available, the summation simplifies to equation \ref{eq::xcorr_ptau} for positive Taus and to \ref{eq::xcorr_ntau} for negative Taus.
 
@@ -114,22 +111,24 @@ X_{ab}(\tau) &:= \sum_{n=-\infty}^{\infty}a\left[n\right]b\left[n+\tau\right] \l
 &= \sum_{n=0}^{N_{Sample}+\tau-2}a\left[n-\tau\right]b\left[n\right] \forall\tau<0 \label{eq::xcorr_ntau} \\	
 \end{align}
 
-Each time new microphone values are available, all stored values are shifted by one storage position.
+Each time new data is available, all stored values are shifted by one storage position.
 Therefore not the whole cross correlation has to be calculated each time.
 Only the newest value pair must be added and the oldest pair subtracted, resulting in two MAC instructions per Tau and correlation.
 To further improve performance, the calculation is pipelined.
-The stages are as follows:
-\begin{enumerate}
-	\item Initialize Tau
-	\item Fetch microphone values to subtract and actual correlation value according to Tau
-	\item Multiply microphone values and subtract from correlation value.\\
-		Fetch microphone values to add to correlation
-	\item Multiply microphone values and add to correlation
-	\item Store new correlation data.
-\end{enumerate}
-Stage 2 -- 4 can operate in parallel to enhance calculation throughput.
-True dual port block RAM is used to fetch different microphone data at the same time (Values to add and subtract).
+Figure \ref{fig::block_diag} shows the data flow during recalculation.
 
+\begin{itemize}
+	\item Block Tau generates the actual Tau that is to be calculated.
+	\item FA denotes fetch on RAM port A. It reads the corresponding cross correlation and the (old) 	microphon values that are to multiply and subtract.	
+	\item The first DSP performes $P = -(AB)+C$, with $A$ and $B$ connected to the microphone values from FA and $C$ to the cross correlation value.
+	\item FB fetches the (new) microphon values that are to multiply and add.
+	\item The second DSP calculates $P = (AB)+C$, with the microphon values from FB and the prepared cross correlation from the first DSP.
+	\item Finaly, SA denotes store on port A, which performes write back of the new calculated cross correlation value.
+\end{itemize}
+
+Flipflops are needed to store and shift the Taus corresponding to the single stages, as each block RAM fetch and store needs one clock cycle.
+Consequently the store command comes always tree clock cycles after load.
+Therefor neither collision nor simultaneous read / write is possible and no collision detection is implemented.
 
 \section{Driver}
 \label{sec::driver}
