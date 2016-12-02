@@ -12,7 +12,7 @@ It is supplied as a complete, ready to use IP block.
 The controller allows easy access to 74xx595 compliant shift registers.
 It contains an internal state machine to generate all needed signals, listed in table \ref{tbl::signals}.
 
-The length of the Shift register is a generic and can be up to 32 bits, i.e. up to 4 shift registers in dasy chain.
+The length of the Shift register is a generic and can be up to 32 bits, i.e. up to 4 shift registers in daisy-chain.
 \emph{If the last shift register in daisy chain is not fully used, the unused output pins must be left floating, as their output is not defined.}
 
 The data clock is derived from the AXI bus clock s\_axi\_aclk, which is divided by D\_DIVIDE.
@@ -105,7 +105,7 @@ A typical use case with high level functions is as follows:
 	\item call AXI\_SH\_595\_init(baseaddr, mask) to initialize the controller. \\
 		This sets the content of the status register to mask. \\
 		Typically: AXI\_SH\_595\_init(AXI\_SH\_595\_BASEADDR, 0x1);
-	\item Programm shift register by calling AXI\_SH\_595\_programm\_sh(baseaddr, data) \\
+	\item Program shift register by calling AXI\_SH\_595\_programm\_sh(baseaddr, data) \\
 		This writes data to the data register and starts the programming sequence.
 	\item If consecutive calls of AXI\_SH\_595\_programm\_sh() are used, make sure the controller is ready to accept new commands by calling AXI\_SH\_595\_ready(baseaddr). \\
 	This function returns 1 if the controller is ready and 0 if not.
@@ -152,10 +152,10 @@ The core can easily be simulated by using the AXI Trafic generator IP from Xilin
 Therefore no additional simulation files are available.
 Software verification can be done by writing and reading data to the data register, using low level function.
 
-\section{Compatibility and Licence}
+\section{Compatibility and License}
 The core is tested under Vivado version 2016.2 and on Artix7 and Zynq7 FPGA.
 Since the core does not use any hardware specific resources, it should run on every other FPGA as well.
 However, this is not tested and may require changes to the core hdl or driver files.
-The core is supplied under no licence or copyright but is the intellectual property of the authors.
+The core is supplied under no license or copyright but is the intellectual property of the authors.
 
 \end{document}

@@ -131,7 +131,7 @@ The differential Delay is fixed to $M=1$.
 The decimation $R$ and the order $N$ are set by software.
 See section \ref{sec::driver} for further information.
 The decimation is limited to the internal register width defined by parameter D\_WIDTH.
-A value greater than $2^{D\_WIDTH} - 1$ results in undefined behaviour.
+A value greater than $2^{D\_WIDTH} - 1$ results in undefined behavior.
 The order can be set to 0\ldots3.
 \emph{Order 0 deactivates the filter and forces its outputs to 0.}
 
@@ -241,10 +241,10 @@ The core can easily be simulated by using the AXI Trafic generator IP from Xilin
 Therefore no additional simulation files are available.
 Software verification can be done by writing and reading data to the status and decimation registers.
 
-\section{Compatibility and Licence}
+\section{Compatibility and License}
 The core is tested under Vivado version 2016.2 and on Artix7 and Zynq7 FPGA.
 Since the core does not use any hardware specific resources, it should run on every other FPGA as well.
 However, this is not tested and may require changes to the core hdl or driver files.
-The core is supplied under no licence or copyright but is the intellectual property of the authors.
+The core is supplied under no license or copyright but is the intellectual property of the authors.
 
 \end{document}
