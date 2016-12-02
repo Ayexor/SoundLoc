@@ -36,7 +36,7 @@
 %	\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
 	
 
-	\begin{tikzpicture}[]
+	\begin{tikzpicture}
 %	\draw[style=my help lines] (0,0) grid (2,2);
 
 	\draw (\xm, \yt) node[block, minimum height=\spcb, minimum width=\spcb](pcb){PCB};
@@ -69,31 +69,31 @@
 	\draw (\xm+0.71*\rmic, \yt-0.5*\rmic-0.2cm)node[](){\tiny U1};
 	
 	% mic_clk
-	\draw (\xm-0.5*\spcb, \yt+0.5*\dw) -| (\xl-0.5*\dw, \yb+0.5*\boxh);
+	\draw[<-] (\xm-0.5*\spcb, \yt+0.5*\dw) -| (\xl-0.5*\dw, \yb+0.5*\boxh);
 	\draw (0.5*\xl+0.5*\xm, \yt+0.5*\dw) node[above](){mic\_clk};
 	%mic_bs
+	\draw[->] (\xm-0.5*\spcb, \yt-0.5*\dw) -| (\xl+0.5*\dw, \yb+0.5*\boxh);
 	\draw (0.5*\xl+0.5*\xm+0.05cm, \yt-0.5*\dw+0.1cm) -- (0.5*\xl+0.5*\xm-0.05cm, \yt-0.5*\dw-0.1cm);
 	\draw (0.5*\xl+0.5*\xm, \yt-0.5*\dw) node[below](){mic\_bs[2:0]};
-	\draw (\xm-0.5*\spcb, \yt-0.5*\dw) -| (\xl+0.5*\dw, \yb+0.5*\boxh);
 	
 	%mic_data
-	\draw (\xl+0.5*\boxw, \yb+0.5*\dw) -- (\xm-0.5*\boxw, \yb+0.5*\dw);
+	\draw[->] (\xl+0.5*\boxw, \yb+0.5*\dw) -- (\xm-0.5*\boxw, \yb+0.5*\dw);
 	\draw (0.5*\xl+0.5*\xm+0.05cm, \yb+0.5*\dw+0.1cm) -- (0.5*\xl+0.5*\xm-0.05cm, \yb+0.5*\dw-0.1cm);
 	\draw (0.5*\xl+0.5*\xm, \yb+0.5*\dw) node[above](){mic\_data[2:0]};
 	%new_val
-	\draw (\xl+0.5*\boxw, \yb-0.5*\dw) -- (\xm-0.5*\boxw, \yb-0.5*\dw);
+	\draw[->] (\xl+0.5*\boxw, \yb-0.5*\dw) -- (\xm-0.5*\boxw, \yb-0.5*\dw);
 	\draw (0.5*\xl+0.5*\xm, \yb-0.5*\dw) node[below](){new\_val};
 
 	%xcorr_data
-	\draw (\xm+0.5*\boxw, \yb+0.5*\dw) -- (\xr-0.5*\boxw, \yb+0.5*\dw);
+	\draw[->] (\xm+0.5*\boxw, \yb+0.5*\dw) -- (\xr-0.5*\boxw, \yb+0.5*\dw);
 	\draw (0.5*\xm+0.5*\xr+0.05cm, \yb+0.5*\dw+0.1cm) -- (0.5*\xm+0.5*\xr-0.05cm, \yb+0.5*\dw-0.1cm);
 	\draw (0.5*\xm+0.5*\xr, \yb+0.5*\dw) node[above](){xcorr\_data[1:0]};
 	%new_val
-	\draw (\xm+0.5*\boxw, \yb-0.5*\dw) -- (\xr-0.5*\boxw, \yb-0.5*\dw);
+	\draw[->] (\xm+0.5*\boxw, \yb-0.5*\dw) -- (\xr-0.5*\boxw, \yb-0.5*\dw);
 	\draw (0.5*\xm+0.5*\xr, \yb-0.5*\dw) node[below](){new\_val};
 	
 	%Display
-	\draw (\xm+0.5*\spcb, \yt) -| (\xr, \yb+0.5*\boxh);
+	\draw[<-] (\xm+0.5*\spcb, \yt) -| (\xr, \yb+0.5*\boxh);
 	\draw (0.5*\xm+0.5*\xr+0.05cm, \yt+0.1cm) -- (0.5*\xm+0.5*\xr-0.05cm, \yt-0.1cm);
 	\draw (0.5*\xm+0.5*\xr, \yt) node[above](){led\_ctrl[4:0]};
 
