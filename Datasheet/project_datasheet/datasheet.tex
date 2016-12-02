@@ -1,15 +1,25 @@
 \input{header.tex}
+\usepackage{subcaption}
 
 \begin{document}
 \maketitle
 \setcounter{tocdepth}{2}
- 
- %% TODO  Picture of PCB !!!
+
 \begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=.4]{./block_diagram/system_top.pdf}
-	\captionof{figure}{Top Level Block Diagramm}
-	\label{fig::top_block}
+	\begin{subfigure}{0.5\textwidth}
+		\centering
+		\includegraphics[scale=.4]{./block_diagram/pcb.jpg}
+		\captionof{figure}{Top Level Block Diagram}
+		\label{fig::top_block}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\centering
+		\includegraphics[scale=.4]{./block_diagram/system_top.pdf}
+		\captionof{figure}{Top Level Block Diagram}
+		\label{fig::top_block}
+	\end{subfigure}
+	\caption{Caption for this figure with two images}
+	\label{fig:image2}
 \end{figure}
 
  
