@@ -1,27 +1,27 @@
 \section{Overview}
 Sound travels at a speed of approximately $c\approx \SI{340}{\meter\per\s}$.
-Using multiple microphones at well known locations allows calculating the direction from which the sound came.
-Three microphones are placed in an equilateral triangle of 42 mm of side length.
+Using multiple microphones at well known locations allows calculating the direction from which the sound originated.
+Three microphones are placed in an equilateral triangle of 42 mm side length.
 A circle of 16 LEDs is placed on the same PCB to indicate the direction.
 Because only the direction in two dimensions is of interest, three microphones are sufficient.
-The microphone operate at approximately \SI{3.2}{\mega\hertz} using $\Sigma\Delta$-modulation.
+The microphones operate with a clock of approximately \SI{3.2}{\mega\hertz} for the $\Sigma\Delta$-modulation.
 They output their bitstream directly without any digital filtering or decimation.
 Figure \ref{fig::top_block} shows a block diagram of the whole system.
 
-The bitstream is filtered by a IP block, configurable by software via AXI4 Lite interface.
-This block contains a CIC filter of configurable order and decimation rate with a differential Delay of $M=1$.
+The bitstream is filtered by an IP block, configurable by software via AXI4 Lite interface.
+This block contains a CIC filter of configurable order and decimation factor with a differential delay of $M=1$.
 An additional IIR filter can be enabled to remove the DC component of the signals.
 See Section \ref{sec::filter} for further information.
 
-From the decimated data, the cross correlation is calculated to find the signal delay between the microphones due to finite sound speed.
+From the decimated data, the cross-correlation is calculated to find the signal delay between the microphones due to finite sound speed.
 This is done by another IP block, also configurable over AXI4 Lite.
 See section \ref{sec::xcorr} for further information.
 
 These delays are read by the CPU, which calculates the direction of the sound source. 
-It basically consists of a base transform from microphone to Cartesian coordinates and calculating the inverse tangent of these coordinates.
+It basically consists of a base transformation from microphone to cartesian coordinates and calculating the arctangent of these coordinates.
 This is described in section \ref{sec::software}.
 
-The Angle is mapped to one of the 16 LED and then fed to another IP block that displays the direction.
-It consists of a simple 16 bit shift register that illuminates the corresponding LED.
+The angle is mapped to one of the 16 LED and then fed to another IP block that displays the direction.
+It consists of a simple 16-bit shift-register that illuminates the corresponding LED.
 For this, see section \ref{sec::display}.
 

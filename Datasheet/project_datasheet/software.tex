@@ -1,19 +1,16 @@
 \section{Software}
 \label{sec::software}
 
-One ARM Cortex A9 core is used in this project.
-At first it configures the filter block by setting order, decimation, IIR pole location and post division factor.
-The filter delivers its values directly to the cross correlation, which again informs the Cortex A9 each time recalculation of the cross correlation is finished.
-The Cortex A9 then reads the data and searches for the maximum.
+One ARM Cortex-A9 core is used in this project.
+At first it configures the filter and cross-correlation blocks by setting order, decimation, IIR pole location and post division factor.
+The filter delivers its values directly to the cross-correlation block, which again informs the Cortex-A9 each time recalculation is finished.
+The Cortex-A9 then reads the result and searches for the maximum in the correlation which corresponds to the delay Tau of the microphone signal to the reference microphone. Tau is proportional to the signal delay caused by finite speed of sound.
 
-The cross correlation is maximal when the signals are equal.
-Thus the Tau at which the maximal value occurs is proportional to the signal delay caused by finite speed of sound.
-
-If the distance between the microphones and the sound source is large, the sound wave can be modeled as a plane wave.
+If the distance between the microphones and the sound source is large compared to the distance between the microphones, the sound wave can be modeled as a plane wave.
 The delays are then proportional to the inner product between the wave vector and the  distance between the correlated microphone, as expressed in (\ref{eq::inner_product}).
 
-Since the microphones are arranged in a equilateral triangle, the two taus are not orthogonal.
-The vector $x$ directing to the source location in Cartesian coordinates can be expressed as per the left side of (\ref{eq::base_transform}).
+Since the microphones are arranged in a equilateral triangle, the two Taus are not orthogonal.
+The vector $x$ directing to the source location in cartesian coordinates can be expressed as per the left side of (\ref{eq::base_transform}).
 To calculate the signal delay in cartesian coordinates, $Bx$ needs to be left multiplied with $B^{-1}$, resulting in the right side of  (\ref{eq::base_transform}).
 
 \begin{align}
@@ -27,5 +24,5 @@ To calculate the signal delay in cartesian coordinates, $Bx$ needs to be left mu
 	\quad &\Rightarrow \quad \begin{pmatrix} x \\ y \end{pmatrix}	= \begin{pmatrix} 1 & -\frac{1}{\sqrt{2}} \\ 0 & \sqrt{2}\end{pmatrix} \begin{pmatrix} {Tau}_{01} \\ {Tau}_{02}\end{pmatrix}
 \end{align}
 
-From the Cartesian coordinates $x,y$, the four quadrant invers tangent can easily be calculated using the C-function \emph{atan2(y,x)}.
-The resulting angle is finally mapped to the corresponding led and displayed.
+From the cartesian coordinates $x,y$, the four quadrant arctangent can easily be calculated using the C-function \emph{atan2(y,x)}.
+The resulting angle is finally mapped to the corresponding LED and displayed.
