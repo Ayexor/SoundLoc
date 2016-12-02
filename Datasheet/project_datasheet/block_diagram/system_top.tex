@@ -1,0 +1,102 @@
+\input{picture_header}
+
+%size
+\newcommand{\spcb}{5.0cm} %size pcb
+\newcommand{\sled}{0.1cm} %size led
+\newcommand{\smic}{0.6cm} %size mic
+\newcommand{\boxh}{2.0cm} %box height
+\newcommand{\boxw}{4.0cm} %box width
+
+%radii
+\newcommand{\rmic}{2.4cm} %radius mics
+\newcommand{\rled}{1.8cm} %radius leds
+
+\newcommand{\dw}{0.5cm} %delta width for wires
+\newcommand{\daled}{-90} %delta angle
+\newcommand{\damic}{90} %delta angle mic
+
+%coordinates
+\newcommand{\xl}{-7.0cm}
+\newcommand{\xm}{0.0cm}
+\newcommand{\xr}{7.0cm}
+
+\newcommand{\yt}{5.0cm}
+\newcommand{\yb}{0.0cm}
+
+
+
+\begin{document}
+	
+	
+	\tikzstyle{block} = [draw, fill=\blueFill, rectangle, 
+	minimum height=3em, minimum width=6em]
+%	\tikzstyle{sum} = [draw, fill=\blueFill, circle, node distance=1cm]
+	\tikzstyle{input} = [coordinate]
+	\tikzstyle{output} = [coordinate]
+%	\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+	
+
+	\begin{tikzpicture}
+%	\draw[style=my help lines] (0,0) grid (2,2);
+
+	\draw (\xm, \yt) node[block, minimum height=\spcb, minimum width=\spcb](pcb){PCB};
+	\draw (\xl, \yb) node[block, minimum height=\boxh, minimum width=\boxw](filt){Decimation filter};
+	\draw (\xm, \yb) node[block, minimum height=\boxh, minimum width=\boxw](xcorr){Cross correlation};
+	\draw (\xr, \yb) node[block, minimum height=\boxh, minimum width=\boxw](cpu){ARM A9};
+	
+	\foreach \idx in {1,...,7}
+	{
+		\draw ({\rled*cos(360/16*\idx+\daled)+\xm}, {\rled*sin(360/16*\idx+\daled)+\yt}) 
+			node[block, minimum height=\sled/2, minimum width=\sled, rotate = 360/16*\idx+\daled](led\idx){};
+		\draw ({\rled*cos(360/16*\idx+\daled)+\xm}, {\rled*sin(360/16*\idx+\daled)+\yt})
+			node[above, rotate = 360/16*\idx+\daled](){\tiny D\idx};
+	}
+	\foreach \idx in {8,...,16}
+	{
+		\draw ({\rled*cos(360/16*\idx+\daled)+\xm}, {\rled*sin(360/16*\idx+\daled)+\yt}) 
+			node[block, minimum height=\sled/2, minimum width=\sled, rotate = 360/16*\idx+\daled](led\idx){};
+		\draw ({\rled*cos(360/16*\idx+\daled)+\xm}, {\rled*sin(360/16*\idx+\daled)+\yt})
+			node[below, rotate = 180+360/16*\idx+\daled](){\tiny D\idx};
+	}
+	%mic1	
+	\draw (\xm, \yt+\rmic-0.2cm) node[block, minimum height=\smic/2, minimum width=\smic](U1){};
+	\draw (\xm, \yt+\rmic-0.2cm)node(){\tiny U1};
+	%mic2
+	\draw (\xm-0.71*\rmic, \yt-0.5*\rmic-0.2cm) node[block, minimum height=\smic, minimum width=\smic/2](U1){};
+	\draw (\xm-0.71*\rmic, \yt-0.5*\rmic-0.2cm)node[](){\tiny U1};
+	%mic3	
+	\draw (\xm+0.71*\rmic, \yt-0.5*\rmic-0.2cm) node[block, minimum height=\smic, minimum width=\smic/2](U1){};
+	\draw (\xm+0.71*\rmic, \yt-0.5*\rmic-0.2cm)node[](){\tiny U1};
+	
+	% mic_clk
+	\draw[<-] (\xm-0.5*\spcb, \yt+0.5*\dw) -| (\xl-0.5*\dw, \yb+0.5*\boxh);
+	\draw (0.5*\xl+0.5*\xm, \yt+0.5*\dw) node[above](){mic\_clk};
+	%mic_bs
+	\draw[->] (\xm-0.5*\spcb, \yt-0.5*\dw) -| (\xl+0.5*\dw, \yb+0.5*\boxh);
+	\draw (0.5*\xl+0.5*\xm+0.05cm, \yt-0.5*\dw+0.1cm) -- (0.5*\xl+0.5*\xm-0.05cm, \yt-0.5*\dw-0.1cm);
+	\draw (0.5*\xl+0.5*\xm, \yt-0.5*\dw) node[below](){mic\_bs[2:0]};
+	
+	%mic_data
+	\draw[->] (\xl+0.5*\boxw, \yb+0.5*\dw) -- (\xm-0.5*\boxw, \yb+0.5*\dw);
+	\draw (0.5*\xl+0.5*\xm+0.05cm, \yb+0.5*\dw+0.1cm) -- (0.5*\xl+0.5*\xm-0.05cm, \yb+0.5*\dw-0.1cm);
+	\draw (0.5*\xl+0.5*\xm, \yb+0.5*\dw) node[above](){mic\_data[2:0]};
+	%new_val
+	\draw[->] (\xl+0.5*\boxw, \yb-0.5*\dw) -- (\xm-0.5*\boxw, \yb-0.5*\dw);
+	\draw (0.5*\xl+0.5*\xm, \yb-0.5*\dw) node[below](){new\_val};
+
+	%xcorr_data
+	\draw[->] (\xm+0.5*\boxw, \yb+0.5*\dw) -- (\xr-0.5*\boxw, \yb+0.5*\dw);
+	\draw (0.5*\xm+0.5*\xr+0.05cm, \yb+0.5*\dw+0.1cm) -- (0.5*\xm+0.5*\xr-0.05cm, \yb+0.5*\dw-0.1cm);
+	\draw (0.5*\xm+0.5*\xr, \yb+0.5*\dw) node[above](){xcorr\_data[1:0]};
+	%new_val
+	\draw[->] (\xm+0.5*\boxw, \yb-0.5*\dw) -- (\xr-0.5*\boxw, \yb-0.5*\dw);
+	\draw (0.5*\xm+0.5*\xr, \yb-0.5*\dw) node[below](){new\_val};
+	
+	%Display
+	\draw[<-] (\xm+0.5*\spcb, \yt) -| (\xr, \yb+0.5*\boxh);
+	\draw (0.5*\xm+0.5*\xr+0.05cm, \yt+0.1cm) -- (0.5*\xm+0.5*\xr-0.05cm, \yt-0.1cm);
+	\draw (0.5*\xm+0.5*\xr, \yt) node[above](){led\_ctrl[4:0]};
+
+	\end{tikzpicture}
+	
+\end{document}
