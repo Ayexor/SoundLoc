@@ -1,1 +1,6 @@
 Vivado/
+*.aux
+Datasheet/project_datasheet/block_diagram/system_top.log
+*.gz
+Datasheet/project_datasheet/datasheet.log
+*.out
