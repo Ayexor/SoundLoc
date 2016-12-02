@@ -41,7 +41,7 @@
 
 	\draw (\xm, \yt) node[block, minimum height=\spcb, minimum width=\spcb](pcb){PCB};
 	\draw (\xl, \ym) node[block, minimum height=\boxh, minimum width=\boxw](filt){Decimation filter};
-	\draw (\xm, \ym) node[block, minimum height=\boxh, minimum width=\boxw](xcorr){Cross correlation};
+	\draw (\xm, \ym) node[block, minimum height=\boxh, minimum width=\boxw](xcorr){Cross-correlation};
 	\draw (\xr, \ym) node[block, minimum height=\boxh, minimum width=\boxw](sh){Display controller};
 	\draw (\xm, \yb) node[block, minimum height=\boxh, minimum width={\xr-\xl+\boxw}](arm){ARM Cortex A9};
 	
@@ -63,11 +63,11 @@
 	\draw (\xm, \yt+\rmic-0.2cm) node[block, minimum height=\smic/2, minimum width=\smic](U1){};
 	\draw (\xm, \yt+\rmic-0.2cm)node(){\tiny U1};
 	%mic2
-	\draw (\xm-0.71*\rmic, \yt-0.5*\rmic-0.2cm) node[block, minimum height=\smic, minimum width=\smic/2](U1){};
-	\draw (\xm-0.71*\rmic, \yt-0.5*\rmic-0.2cm)node[](){\tiny U1};
+	\draw (\xm-0.71*\rmic, \yt-0.5*\rmic-0.2cm) node[block, minimum height=\smic, minimum width=\smic/2](U2){};
+	\draw (\xm-0.71*\rmic, \yt-0.5*\rmic-0.2cm)node[](){\tiny U2};
 	%mic3	
-	\draw (\xm+0.71*\rmic, \yt-0.5*\rmic-0.2cm) node[block, minimum height=\smic, minimum width=\smic/2](U1){};
-	\draw (\xm+0.71*\rmic, \yt-0.5*\rmic-0.2cm)node[](){\tiny U1};
+	\draw (\xm+0.71*\rmic, \yt-0.5*\rmic-0.2cm) node[block, minimum height=\smic, minimum width=\smic/2](U3){};
+	\draw (\xm+0.71*\rmic, \yt-0.5*\rmic-0.2cm)node[](){\tiny U3};
 	
 	% mic_clk
 	\draw[<-] (\xm-0.5*\spcb, \yt+0.5*\dw) -| (\xl-0.5*\dw, \ym+0.5*\boxh);
@@ -108,7 +108,7 @@
 	%to pcb
 	\draw[<-] (\xm+0.5*\spcb, \yt) -| (\xr, \ym+0.5*\boxh);
 	\draw (0.5*\xm+0.5*\xr+0.05cm, \yt+0.1cm) -- (0.5*\xm+0.5*\xr-0.05cm, \yt-0.1cm);
-	\draw (0.5*\xm+0.5*\xr, \yt) node[above](){led\_ctrl[4:0]};
+	\draw (0.5*\xm+0.5*\xr, \yt) node[above](){led\_ctrl[3:0]};
 	
 	%config
 %	\draw[->] (\xr, \ym+0.5*\boxh)
