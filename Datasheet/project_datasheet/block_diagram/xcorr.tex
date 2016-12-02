@@ -9,7 +9,7 @@
 
 %radii
 \newcommand{\rmic}{2.4cm} %radius mics
-\newcommand{\rled}{1.6cm} %radius leds
+\newcommand{\rled}{1.8cm} %radius leds
 
 \newcommand{\dw}{0.5cm} %delta width for wires
 \newcommand{\daled}{-90} %delta angle
@@ -20,9 +20,9 @@
 \newcommand{\xm}{0.0cm}
 \newcommand{\xr}{7.0cm}
 
-\newcommand{\yt}{9.0cm}
-\newcommand{\ym}{4.0cm}
+\newcommand{\yt}{5.0cm}
 \newcommand{\yb}{0.0cm}
+
 
 
 \begin{document}
@@ -40,10 +40,9 @@
 %	\draw[style=my help lines] (0,0) grid (2,2);
 
 	\draw (\xm, \yt) node[block, minimum height=\spcb, minimum width=\spcb](pcb){PCB};
-	\draw (\xl, \ym) node[block, minimum height=\boxh, minimum width=\boxw](filt){Decimation filter};
-	\draw (\xm, \ym) node[block, minimum height=\boxh, minimum width=\boxw](xcorr){Cross correlation};
-	\draw (\xr, \ym) node[block, minimum height=\boxh, minimum width=\boxw](sh){Display controller};
-	\draw (\xm, \yb) node[block, minimum height=\boxh, minimum width={\xr-\xl+\boxw}](arm){ARM Cortex A9};
+	\draw (\xl, \yb) node[block, minimum height=\boxh, minimum width=\boxw](filt){Decimation filter};
+	\draw (\xm, \yb) node[block, minimum height=\boxh, minimum width=\boxw](xcorr){Cross correlation};
+	\draw (\xr, \yb) node[block, minimum height=\boxh, minimum width=\boxw](cpu){ARM A9};
 	
 	\foreach \idx in {1,...,7}
 	{
@@ -70,49 +69,33 @@
 	\draw (\xm+0.71*\rmic, \yt-0.5*\rmic-0.2cm)node[](){\tiny U1};
 	
 	% mic_clk
-	\draw[<-] (\xm-0.5*\spcb, \yt+0.5*\dw) -| (\xl-0.5*\dw, \ym+0.5*\boxh);
+	\draw[<-] (\xm-0.5*\spcb, \yt+0.5*\dw) -| (\xl-0.5*\dw, \yb+0.5*\boxh);
 	\draw (0.5*\xl+0.5*\xm, \yt+0.5*\dw) node[above](){mic\_clk};
 	%mic_bs
-	\draw[->] (\xm-0.5*\spcb, \yt-0.5*\dw) -| (\xl+0.5*\dw, \ym+0.5*\boxh);
+	\draw[->] (\xm-0.5*\spcb, \yt-0.5*\dw) -| (\xl+0.5*\dw, \yb+0.5*\boxh);
 	\draw (0.5*\xl+0.5*\xm+0.05cm, \yt-0.5*\dw+0.1cm) -- (0.5*\xl+0.5*\xm-0.05cm, \yt-0.5*\dw-0.1cm);
 	\draw (0.5*\xl+0.5*\xm, \yt-0.5*\dw) node[below](){mic\_bs[2:0]};
-
-	%% Filter
-	%config
-	\draw[<->] (\xl, \ym-0.5*\boxh) -- (\xl, \yb+0.5*\boxh);
-	\draw (\xl+0.1cm, 0.5*\yb+0.5*\ym+0.05cm) -- (\xl-0.1cm, 0.5*\yb+0.5*\ym-0.05cm);
-	\draw (\xl, 0.5*\yb+0.5*\ym) node[right](){AXI4\_Lite};
-		
-	%mic_data
-	\draw[->] (\xl+0.5*\boxw, \ym+0.5*\dw) -- (\xm-0.5*\boxw, \ym+0.5*\dw);
-	\draw (0.5*\xl+0.5*\xm+0.05cm, \ym+0.5*\dw+0.1cm) -- (0.5*\xl+0.5*\xm-0.05cm, \ym+0.5*\dw-0.1cm);
-	\draw (0.5*\xl+0.5*\xm, \ym+0.5*\dw) node[above](){mic\_data[2:0]};
-	%new_val
-	\draw[->] (\xl+0.5*\boxw, \ym-0.5*\dw) -- (\xm-0.5*\boxw, \ym-0.5*\dw);
-	\draw (0.5*\xl+0.5*\xm, \ym-0.5*\dw) node[below](){new\_val};
-
-	%% XCorr
-	% config
-	\draw[<->] (\xm+0.5*\dw, \ym-0.5*\boxh) -- (\xm+0.5*\dw, \yb+0.5*\boxh);
-	\draw (\xm+0.5*\dw+0.1cm, 0.5*\yb+0.5*\ym+0.05cm) -- (\xm+0.5*\dw-0.1cm, 0.5*\yb+0.5*\ym-0.05cm);
-	\draw (\xm+0.5*\dw, 0.5*\yb+0.5*\ym) node[right](){AXI4\_Lite};
-	% new_val
-	\draw[->] (\xm-0.5*\dw, \ym-0.5*\boxh) -- (\xm-0.5*\dw, \yb+0.5*\boxh);
-	\draw (\xm-0.5*\dw, 0.5*\yb+0.5*\ym) node[left](){new\_val};
 	
-	% Display
-	%config
-	\draw[<->] (\xr, \ym-0.5*\boxh) -- (\xr, \yb+0.5*\boxh);
-	\draw (\xr+0.1cm, 0.5*\yb+0.5*\ym+0.05cm) -- (\xr-0.1cm, 0.5*\yb+0.5*\ym-0.05cm);
-	\draw (\xr, 0.5*\yb+0.5*\ym) node[right](){AXI4\_Lite};
-	%to pcb
-	\draw[<-] (\xm+0.5*\spcb, \yt) -| (\xr, \ym+0.5*\boxh);
+	%mic_data
+	\draw[->] (\xl+0.5*\boxw, \yb+0.5*\dw) -- (\xm-0.5*\boxw, \yb+0.5*\dw);
+	\draw (0.5*\xl+0.5*\xm+0.05cm, \yb+0.5*\dw+0.1cm) -- (0.5*\xl+0.5*\xm-0.05cm, \yb+0.5*\dw-0.1cm);
+	\draw (0.5*\xl+0.5*\xm, \yb+0.5*\dw) node[above](){mic\_data[2:0]};
+	%new_val
+	\draw[->] (\xl+0.5*\boxw, \yb-0.5*\dw) -- (\xm-0.5*\boxw, \yb-0.5*\dw);
+	\draw (0.5*\xl+0.5*\xm, \yb-0.5*\dw) node[below](){new\_val};
+
+	%xcorr_data
+	\draw[->] (\xm+0.5*\boxw, \yb+0.5*\dw) -- (\xr-0.5*\boxw, \yb+0.5*\dw);
+	\draw (0.5*\xm+0.5*\xr+0.05cm, \yb+0.5*\dw+0.1cm) -- (0.5*\xm+0.5*\xr-0.05cm, \yb+0.5*\dw-0.1cm);
+	\draw (0.5*\xm+0.5*\xr, \yb+0.5*\dw) node[above](){xcorr\_data[1:0]};
+	%new_val
+	\draw[->] (\xm+0.5*\boxw, \yb-0.5*\dw) -- (\xr-0.5*\boxw, \yb-0.5*\dw);
+	\draw (0.5*\xm+0.5*\xr, \yb-0.5*\dw) node[below](){new\_val};
+	
+	%Display
+	\draw[<-] (\xm+0.5*\spcb, \yt) -| (\xr, \yb+0.5*\boxh);
 	\draw (0.5*\xm+0.5*\xr+0.05cm, \yt+0.1cm) -- (0.5*\xm+0.5*\xr-0.05cm, \yt-0.1cm);
 	\draw (0.5*\xm+0.5*\xr, \yt) node[above](){led\_ctrl[4:0]};
-	
-	%config
-%	\draw[->] (\xr, \ym+0.5*\boxh)
-	
 
 	\end{tikzpicture}
 	

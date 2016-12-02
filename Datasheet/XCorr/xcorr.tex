@@ -29,7 +29,7 @@ The project Soundloc contains three microphones that deliver a $\Sigma\Delta$-mo
 This is processed by another IP core SDM\_DECIMATOR, that delivers the signed microphone data and a signal that indicates new values.
 
 This IP core then calculates the cross correlation between the three microphone signals.
-To do this efficiently, the correlation is calculated iteratively, using fast block ram and DSP slices.
+To do this efficiently and in real time, the correlation is calculated iteratively, using fast block RAM and DSP slices.
 Detailed information to each stage is provided in the following sections.
 
 \section{Parameter description}

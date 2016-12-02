@@ -1,5 +1,8 @@
 \documentclass[a4papper, 11pt]{article}
 
+\title{-- Digital Microelectronics --- SoundLoc -- \\ Localication of Soundsources by cross-correlating three $\Sigma\Delta$-microphon signals}
+\author{Stefan Kull, Roy Seitz, Marco Zollinger}
+
 \usepackage[T1]{fontenc}			%umlaute als eigene Zeichen
 \usepackage[latin1]{inputenc}	%umlaute erkennen
 \usepackage{lmodern}
@@ -9,6 +12,8 @@
 \usepackage[english]{babel}
 \usepackage{textgreek}
 \usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{caption}			%für \captionof
 
 \usepackage[
 	pdftitle={SoundLoc -- Digital Microelectronics Project},						%Titel des PDF Dokuments.
@@ -25,5 +30,13 @@
 	pdfpagelabels
 ]{hyperref}
 
-\title{-- Digital Microelectronics --- SoundLoc -- Localication of Soundsources by cross-correlating three $\Sigma\Delta$-microphon signals}
-\author{Stefan Kull, Roy Seitz, Marco Zollinger}
+\usepackage[
+%includeheadfoot,		%Kopf- und Fusszeilen verwenden
+%headheight=15pt,		%Höhe der Kopfzeile
+left=30mm,				%abstand von Seitenraendern
+right=30mm,				%
+top=20mm,
+bottom=20mm,
+%			twoside
+]{geometry}
+
