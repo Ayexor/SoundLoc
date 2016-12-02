@@ -4,3 +4,4 @@ Datasheet/project_datasheet/block_diagram/system_top.log
 *.gz
 Datasheet/project_datasheet/datasheet.log
 *.out
+Datasheet/AXI_SH_595/axi_sh_595.log
