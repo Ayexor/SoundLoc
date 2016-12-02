@@ -14,8 +14,8 @@ This is due to the project extent which is higher than expected.
 Low level software access is provided but must be used carefully.
 High level software support will be added in a future release.
 
-The project Soundloc contains three digital microphones that deliver a $\Sigma\Delta$-modulated (PDM) bitstream.
-This is processed by another IP core SDM\_DECIMATOR, that delivers the signed microphone data and an interrupt that indicates new values.
+The project Soundloc contains three microphones that deliver a $\Sigma\Delta$-modulated bitstream.
+This is processed by another IP core SDM\_DECIMATOR, that delivers signed microphone data and an interrupt that indicates new values.
 
 This IP core then calculates the cross-correlation between the three microphone signals.
 To do this efficiently and in real-time, the correlation is calculated iteratively, using fast block RAM and DSP slices.
@@ -58,7 +58,6 @@ Tau ranges from $Tau_{min}$ to $Tau_{max}$, given in equation \ref{eq::parameter
 There is a register to clear the internal RAM and one register for each correlation and Tau.
 Each can be accessed directly by their address as described in section \ref{sec::driver}.
 
-\subsection{Clearing internal RAM}
 To clear the internal RAM, Address 0 needs to be set to 0x1 for at least $N_{Sample}$  clock cycles.
 Because only one internal RAM address can be set at once, asserting this bit for less than $N_{Sample}$ cycles results in corrupted data.
 
@@ -94,12 +93,6 @@ The recalculation takes $N_{Tau}+4$ clock cycles.
 An interrupt is asserted each time the cross-correlation has been recalculated.
 
 \subsection{Implementation}
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale = 1.5]{block_diagram/xcorr_diag.pdf}
-	\captionof{figure}{Block diagram of pipelined calculation of cross-correlation}
-	\label{fig::block_diag}
-\end{figure}
 
 The cross-correlation of two discrete signals is defined per equation \ref{eq::xcorr}.
 Since only $N_{Sample}$ values are stored and available, the summation simplifies to equation \ref{eq::xcorr_ptau} for positive Taus and to \ref{eq::xcorr_ntau} for negative Taus.
@@ -113,6 +106,14 @@ X_{ab}(\tau) &:= \sum_{n=-\infty}^{\infty}a\left[n\right]b\left[n+\tau\right] \l
 Each time new data is available, all stored values are shifted by one storage position.
 Therefore not the whole cross-correlation has to be calculated each time.
 Only the newest value pair must be added and the oldest pair subtracted, resulting in two MAC-instructions per Tau and correlation.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale = 1.5]{block_diagram/xcorr_diag.pdf}
+	\captionof{figure}{Block diagram of pipelined calculation of cross-correlation}
+	\label{fig::block_diag}
+\end{figure}
+
 To further improve performance, the calculation is pipelined.
 Figure \ref{fig::block_diag} shows the data flow during recalculation.
 

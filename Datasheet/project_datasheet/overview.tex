@@ -21,7 +21,7 @@ These delays are read by the CPU, which calculates the direction of the sound so
 It basically consists of a base transformation from microphone to cartesian coordinates and calculating the arctangent of these coordinates.
 This is described in section \ref{sec::software}.
 
-The angle is mapped to one of the 16 LED and then fed to another IP block that displays the direction.
+The angle is mapped to one of the 16 LEDs and then fed to another IP block that displays the direction.
 It consists of a simple 16-bit shift-register that illuminates the corresponding LED.
 For this, see section \ref{sec::display}.
 
