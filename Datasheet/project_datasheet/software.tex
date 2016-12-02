@@ -9,27 +9,22 @@ The Cortex A9 then reads the data and searches for the maximum.
 The cross correlation is maximal when the signals are equal.
 Thus the Tau at which the maximal value occurs is proportional to the signal delay caused by finite speed of sound.
 
-If the distance between the microphones and the sound source is large, the incoming wave can be modeled as a plane wave.
-The delays are then proportional to the inner product between the wave vector and the  distance between the correlated microphone.
-This is expressed by equation \ref{eq::inner_product}.
+If the distance between the microphones and the sound source is large, the sound wave can be modeled as a plane wave.
+The delays are then proportional to the inner product between the wave vector and the  distance between the correlated microphone, as expressed in (\ref{eq::inner_product}).
 
 Since the microphones are arranged in a equilateral triangle, the two taus are not orthogonal.
-The vector directing to the source location can be expressed as per equation \ref{eq::direction_simple}.
-To calculate the signal delay in cartesian coordinates, $Bx$ needs to be left multiplied with $B^{-1}$.
+The vector $x$ directing to the source location in Cartesian coordinates can be expressed as per the left side of (\ref{eq::base_transform}).
+To calculate the signal delay in cartesian coordinates, $Bx$ needs to be left multiplied with $B^{-1}$, resulting in the right side of  (\ref{eq::base_transform}).
 
 \begin{align}
 	{Tau}_{0n} &\propto \overrightarrow{k} \cdot \overrightarrow{M_nM_0} \quad n\in\{1,2\}\label{eq::inner_product}
 \end{align}
 
 \begin{align}
-	v 	&= E\tau = Bx \label{eq::direction_simple}\\
-		&= \begin{pmatrix} 1 & 0 \\ 0 & 1\end{pmatrix} \begin{pmatrix} {Tau}_{01} \\ {Tau}_{02}\end{pmatrix}
+	\tau = Bx \quad &\Rightarrow \quad x = B^{-1}\tau \label{eq::base_transform}\\
+	\begin{pmatrix} {Tau}_{01} \\ {Tau}_{02}\end{pmatrix}
 		=  \begin{pmatrix} 1 & \cos(\frac{\pi}{3}) \\ 0 & \sin(\frac{\pi}{3})\end{pmatrix} \begin{pmatrix} x \\ y\end{pmatrix}
-\end{align}
-
-\begin{align}
-	x &= B^{-1}\tau \\
-	\begin{pmatrix} x \\ y \end{pmatrix}	&= \begin{pmatrix} 1 & -\frac{1}{\sqrt{2}} \\ 0 & \sqrt{2}\end{pmatrix} \begin{pmatrix} {Tau}_{01} \\ {Tau}_{02}\end{pmatrix}
+	\quad &\Rightarrow \quad \begin{pmatrix} x \\ y \end{pmatrix}	= \begin{pmatrix} 1 & -\frac{1}{\sqrt{2}} \\ 0 & \sqrt{2}\end{pmatrix} \begin{pmatrix} {Tau}_{01} \\ {Tau}_{02}\end{pmatrix}
 \end{align}
 
 From the Cartesian coordinates $x,y$, the four quadrant invers tangent can easily be calculated using the C-function \emph{atan2(y,x)}.
