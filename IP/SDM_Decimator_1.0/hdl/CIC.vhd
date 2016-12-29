@@ -38,119 +38,130 @@ entity CIC is
 		 rst       : in  STD_LOGIC;
 		 bs_ena    : in  STD_LOGIC;
 		 decim_ena : in  STD_LOGIC;
-		 order    : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
-		 iir_ena : in  STD_LOGIC;
-		 iir_sr       : in unsigned(3 downto 0);
+		 order     : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
+		 iir_ena   : in  STD_LOGIC;
+		 iir_sr    : in  unsigned(3 downto 0);
 		 bs        : in  STD_LOGIC;
 		 val       : out signed(D_WIDTH - 1 downto 0));
 end CIC;
 
 architecture Behavioral of CIC is
-	signal dif1, dif2, dif3, dif_pre1, dif_pre2, dif_pre3 : signed(D_WIDTH - 1 downto 0);
-	signal acc1, acc2, acc3                       : signed(D_WIDTH - 1 downto 0);
-	signal cic_o, cic_o_pre, val_i, val_pre_i               : signed(D_WIDTH - 1 downto 0);
-	signal bs_in : signed(1 downto 0);
+	signal dif1, dif2, dif3        : signed(D_WIDTH - 1 downto 0);
+	signal dif_in, dif_out         : signed(D_WIDTH - 1 downto 0);
+	signal acc1, acc2, acc3        : signed(D_WIDTH - 1 downto 0);
+	signal cic_o, cic_o_pre, val_i : signed(D_WIDTH - 1 downto 0);
+	signal bs_in                   : signed(1 downto 0);
 
 begin
-
-	bs_in <= to_signed(1,2) when bs = '1' else to_signed(-1,2);
+	bs_in <= (not bs, '1');             -- '1' => +1 ("01"), '0' => -1 ("11")
 	-- Integrator stage
-	acc_p : process(clk, rst) is
-	begin
-		if rst = '1' then
-			acc1 <= (others => '0');
-			acc2 <= (others => '0');
-			acc3 <= (others => '0');
-		elsif rising_edge(clk) then
-			if bs_ena = '1' then
-				if order /= "00" then -- order = 1, 2 or 3
-					acc1 <= acc1 + bs_in;
-				else
-					acc1 <= (others => '0');
-				end if;
-				if order(1) = '1' then -- order = 2 or 3
-					acc2 <= acc2 + acc1;
-				else
-					acc2 <= (others => '0');
-				end if;
-				if order = "11" then -- order = 3
-					acc3 <= acc3 + acc2;
-				else
-					acc3 <= (others => '0');
-				end if;  
-			end if;
-		end if;
-	end process;
+	u_acc1 : entity work.acc_DSP
+		generic map(
+			D_WIDTH => D_WIDTH
+		)
+		port map(
+			clk     => clk,
+			rst     => rst,
+			ce      => bs_ena,
+			acc_in  => resize(bs_in, D_WIDTH),
+			acc_out => acc1
+		);
+
+	u_acc2 : entity work.acc_DSP
+		generic map(
+			D_WIDTH => D_WIDTH
+		)
+		port map(
+			clk     => clk,
+			rst     => rst,
+			ce      => bs_ena,
+			acc_in  => acc1,
+			acc_out => acc2
+		);
+
+	u_acc3 : entity work.acc_DSP
+		generic map(
+			D_WIDTH => D_WIDTH
+		)
+		port map(
+			clk     => clk,
+			rst     => rst,
+			ce      => bs_ena,
+			acc_in  => acc2,
+			acc_out => acc3
+		);
 
 	-- Comb stage
-	com_p : process(clk, rst) is
+	dif_in_sel : with order select dif_in <=
+		acc1 when "01",
+		acc2 when "10",
+		acc3 when "11",
+		to_signed(0, D_WIDTH) when others;
+
+	u_dif1 : entity work.dif_DSP
+		generic map(
+			D_WIDTH => D_WIDTH
+		)
+		port map(
+			clk     => clk,
+			rst     => rst,
+			ce      => decim_ena,
+			dif_in  => dif_in,
+			dif_out => dif1
+		);
+
+	u_dif2 : entity work.dif_DSP
+		generic map(
+			D_WIDTH => D_WIDTH
+		)
+		port map(
+			clk     => clk,
+			rst     => rst,
+			ce      => decim_ena,
+			dif_in  => dif1,
+			dif_out => dif2
+		);
+
+	u_dif3 : entity work.dif_DSP
+		generic map(
+			D_WIDTH => D_WIDTH
+		)
+		port map(
+			clk     => clk,
+			rst     => rst,
+			ce      => decim_ena,
+			dif_in  => dif2,
+			dif_out => dif3
+		);
+
+	dif_out_sel : with order select dif_out <=
+		dif1 when "01",
+		dif2 when "10",
+		dif3 when "11",
+		to_signed(0, D_WIDTH) when others;
+
+	cic_o_select : cic_o <= dif_out;
+
+	iir_p : process(clk) is
 	begin
-		if rst = '1' then
-			dif_pre1 <= (others => '0');
-			dif1     <= (others => '0');
-			dif_pre2 <= (others => '0');
-			dif2     <= (others => '0');
-			dif_pre3 <= (others => '0');
-			dif3     <= (others => '0');
-		elsif rising_edge(clk) then
-			if decim_ena = '1' then
-				dif_pre1  <= dif1;
-				dif_pre2  <= dif2;
-				dif_pre3  <= dif3;
-				
-				if order(1) = '1' then -- order = 2 or 3
-					dif2    <= dif1 - dif_pre1;
-				else
-					dif2 <= (others => '0');
+		if rising_edge(clk) then
+			if rst = '1' then
+				cic_o_pre <= (others => '0');
+				val_i     <= (others => '0');
+			else
+				if decim_ena = '1' then
+					cic_o_pre <= cic_o;
+
+					-- IIR DC-block (1-z**-1)/(1-(1-2**-8)z**-1)
+					if iir_ena = '1' then
+						val_i <= cic_o - cic_o_pre + (val_i - shift_right(val_i, to_integer(iir_sr)));
+					else
+						val_i <= cic_o;
+					end if;
 				end if;
-				if order = "11" then -- order = 3
-					dif3    <= dif2 - dif_pre2;
-				else
-					dif3 <= (others => '0');
-				end if;  
-											
-				case order is
-					when "01" =>
-						dif1    <= acc1;
-					when "10" =>
-						dif1    <= acc2;
-					when "11" =>
-						dif1    <= acc3;
-					when others =>
-						dif1    <= (others => '0');
-				end case;
 			end if;
 		end if;
 	end process;
-	
-	cic_o_select : process (clk, rst) is
-	begin
-		if rst = '1' then
-			cic_o_pre <= (others => '0');
-			cic_o <= (others => '0');
-			val_i <= (others => '0');
-		elsif rising_edge(clk) then
-			if decim_ena = '1' then
-				cic_o_pre <= cic_o;
-				case order is
-					when "01" =>
-						cic_o <= dif1 - dif_pre1;
-					when "10" =>
-						cic_o <= dif2 - dif_pre2;						
-					when "11" =>
-						cic_o <= dif3 - dif_pre3;
-					when others =>
-						cic_o <= (others => '0');
-				end case;
-				
-				-- IIR DC-block (1-z**-1)/(1-(1-2**-8)z**-1)
-				if iir_ena = '1' then
-					val_i <= cic_o - cic_o_pre + (val_i - shift_right(val_i, to_integer(iir_sr)));
-				else
-					val_i <= cic_o;
-				end if;
-			end if;
-		end if;
-	end process;
-	val   <= val_i;
+	val <= val_i;
+
 end Behavioral;

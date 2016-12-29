@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity SDM_Decimator_v1_0 is
 	generic (
 		-- Users to add parameters here
-		D_WIDTH : integer range 1 to 32 := 16; -- Internal width
+		D_WIDTH : integer range 1 to 32 := 25; -- Internal width
 		D_OUT_WIDTH : integer range 1 to 18 := 16; -- Output Data width (DSP support Data up to 18 Bit)
 		DIVIDE : integer range 4 to 1024 := 40; -- Divider to generate BS clk
 		-- User parameters ends
@@ -21,6 +21,7 @@ entity SDM_Decimator_v1_0 is
 		mic_clk : out STD_LOGIC; -- Bitstream clock
 		mic_bs : in std_logic_vector(2 downto 0); -- Bitstream from DSM
 		irq_new_val : out std_logic;	-- interrupt every decimation cycle
+		new_val : out std_logic;	-- interrupt every decimation cycle
 		val0 : out signed(D_OUT_WIDTH-1 downto 0);
 		val1 : out signed(D_OUT_WIDTH-1 downto 0);
 		val2 : out signed(D_OUT_WIDTH-1 downto 0);
@@ -176,6 +177,8 @@ SDM_Decimator_v1_0_S_AXI_inst : entity work.SDM_Decimator_v1_0_S_AXI
 			
 	-- Logic for decimation
 	irq_new_val <= irq_ena when decim_cnt = 1 else '0';
+	new_val <= '1' when decim_cnt = 1 else '0';
+	
 	decim_comb : decim_cnt_next <= to_unsigned(1, D_WIDTH) when decim_cnt >= decim_max else decim_cnt + 1;
 	decim_fsm : process (clk, rst) is
 	begin
