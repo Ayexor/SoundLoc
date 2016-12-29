@@ -3,7 +3,7 @@ clc
 format shortEng
 
 %% Import data from text file.
-filename = 'E:\git\SoundLoc\Roy\SDK\src\log.txt';
+filename = 'E:\git\SoundLoc\Roy\Matlab\std_out.log';
 fileID = fopen(filename,'r');
 try
 dataArray = textscan(fileID, '%f%f%f%[^\n\r]', 'Delimiter', ',',  'ReturnOnError', false);
@@ -11,17 +11,18 @@ catch
 end
 fclose(fileID);
 
+%%
 
 mic1_r = dataArray{:, 1};
 mic2_r = dataArray{:, 2};
 mic3_r = dataArray{:, 3};
 
 %% paramter
-decim = 40;
-c = 340; % distance in m (set to 1 for delay in sec)
-pTau = 32; % plot samples of corr
+decim = 32;
+c = 340; % speed of sound in m/s (set to 1 for delay in sec)
+pTau = 5000; % plot samples of corr
 N = length(mic1_r);
-Ts = decim/2.5e6;
+Ts = decim/(100e6/32);
 t = (1:N) * Ts;
 
 % mic1 = upsample(mic1_r, upsampling);
@@ -52,7 +53,7 @@ plot(t, mic1, 'r', t,  mic2, 'g', t,  mic3, 'b');
 grid on
 legend('mic1', 'mic2', 'mic3')
 figure(2)
-plot(tau*Ts*c, cor12, 'rx-', tau*Ts*c,  cor13, 'gx-');
+plot(tau, cor12, 'rx-', tau,  cor13, 'gx-');
 grid on
 legend('corr12', 'corr13');
 
