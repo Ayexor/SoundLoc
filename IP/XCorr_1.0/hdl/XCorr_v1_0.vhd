@@ -257,6 +257,10 @@ begin
 					FA_tau <= tau_cnt;      -- shift taus for stages
 					FB_tau <= FA_tau;
 					SA_tau <= FB_tau;
+				else
+					FA_tau <= FA_tau;      -- shift taus for stages
+					FB_tau <= FB_tau;
+					SA_tau <= SA_tau;
 				end if;
 			end if;
 		end if;
