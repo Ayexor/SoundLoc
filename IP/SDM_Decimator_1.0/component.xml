@@ -264,7 +264,7 @@
             <spirit:name>new_val</spirit:name>
           </spirit:logicalPort>
           <spirit:physicalPort>
-            <spirit:name>irq_new_val</spirit:name>
+            <spirit:name>new_val</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
       </spirit:portMaps>
@@ -354,7 +354,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>b322dc76</spirit:value>
+            <spirit:value>193223a0</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -370,7 +370,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>b322dc76</spirit:value>
+            <spirit:value>193223a0</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -384,7 +384,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>2ba054bc</spirit:value>
+            <spirit:value>d7c80e85</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -450,6 +450,19 @@
       </spirit:port>
       <spirit:port>
         <spirit:name>irq_new_val</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>std_logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_vhdlsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_vhdlbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>new_val</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:wireTypeDefs>
@@ -838,7 +851,7 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>D_WIDTH</spirit:name>
         <spirit:displayName>D Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.D_WIDTH" spirit:maximum="32" spirit:rangeType="long">16</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.D_WIDTH" spirit:maximum="32" spirit:rangeType="long">25</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>D_OUT_WIDTH</spirit:name>
@@ -871,13 +884,23 @@
         <spirit:fileType>vhdlSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
+        <spirit:name>hdl/SDM_Decimator_v1_0_DIF.vhd</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>hdl/SDM_Decimator_v1_0_ACC.vhd</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
         <spirit:name>hdl/CIC.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
         <spirit:name>hdl/SDM_Decimator_v1_0.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_62a8e887</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_2666eb59</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -885,6 +908,18 @@
       <spirit:file>
         <spirit:name>hdl/SDM_Decimator_v1_0_S_AXI.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>hdl/SDM_Decimator_v1_0_DIF.vhd</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>hdl/SDM_Decimator_v1_0_ACC.vhd</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
       <spirit:file>
         <spirit:name>hdl/CIC.vhd</spirit:name>
@@ -998,7 +1033,7 @@
     <spirit:parameter>
       <spirit:name>D_WIDTH</spirit:name>
       <spirit:displayName>Internal data didth</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.D_WIDTH" spirit:minimum="1" spirit:maximum="32" spirit:rangeType="long">16</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.D_WIDTH" spirit:minimum="1" spirit:maximum="32" spirit:rangeType="long">25</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>D_OUT_WIDTH</spirit:name>
@@ -1020,20 +1055,20 @@
         <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
       </xilinx:taxonomies>
       <xilinx:displayName>SDM_Decimator_v1.0</xilinx:displayName>
-      <xilinx:coreRevision>24</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2016-11-30T21:22:28Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>27</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2016-12-28T17:06:15Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="xilinx.com:user:SDM_Decimator:1.0_ARCHIVE_LOCATION">E:/git/SoundLoc/IP/SDM_Decimator_1.0</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2016.2</xilinx:xilinxVersion>
-      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="90bae9ca"/>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="c5312907"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="59f5074b"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="6d059852"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="d6dd8f5a"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="4ffe8bd4"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="9a4500d3"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="a2eaae91"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="fbab5488"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="8d191ffe"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="b474370d"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>
