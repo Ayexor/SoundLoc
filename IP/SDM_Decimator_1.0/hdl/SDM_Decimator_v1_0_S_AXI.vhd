@@ -124,7 +124,6 @@ architecture arch_imp of SDM_Decimator_v1_0_S_AXI is
 	signal slv_reg_rden	: std_logic;
 	signal slv_reg_wren	: std_logic;
 	signal reg_data_out	:std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
-	signal byte_index	: integer;
 
 begin
 	

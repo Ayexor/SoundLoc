@@ -15,9 +15,9 @@ Low level software access is provided but must be used carefully.
 High level software support will be added in a future release.
 
 The project Soundloc contains three microphones that deliver a $\Sigma\Delta$-modulated bitstream.
-This is processed by another IP core SDM\_DECIMATOR, that delivers signed microphone data and an interrupt that indicates new values.
+These are processed by another IP core SDM\_DECIMATOR, that delivers signed microphone data and an interrupt that indicates new values.
 
-This IP core then calculates the cross-correlation between the three microphone signals.
+This IP core then calculates the cross-correlation between the three microphone signals and findes the Tau where the correlation is maximal.
 To do this efficiently and in real-time, the correlation is calculated iteratively, using fast block RAM and DSP slices.
 Detailed information to each stage is provided in the following sections.
 
@@ -25,82 +25,52 @@ Detailed information to each stage is provided in the following sections.
 \label{sec::parameters}
 
 The IP core can be configured at compile time by several parameters, listed in table \ref{tbl::parameters}.
-The number of stored samples is calculated according to equation \ref{eq::parameter_sample_cnt}.
-The calculated number of Taus is derived from equation \ref{eq::parameter_tau_cnt}.
-Tau ranges from $Tau_{min}$ to $Tau_{max}$, given in equation \ref{eq::parameter_tau_min} and \ref{eq::parameter_tau_max}
+The number of stored samples is calculated according to (\ref{eq::parameter_sample_cnt}).
+The calculated number of Taus is derived from (\ref{eq::parameter_tau_cnt}).
+Tau ranges from Tau\textsubscript{min} to Tau\textsubscript{max}, given in (\ref{eq::parameter_tau_min}) and (\ref{eq::parameter_tau_max})
 
 \begin{align}
-	N_{Sample} &= 2^{D\_SAMPLE\_ADDR\_WIDTH}-1 \label{eq::parameter_sample_cnt} \\
-	N_{Tau} &=2^{D\_TAU\_ADDR\_WIDTH}-2 \label{eq::parameter_tau_cnt} \\
-	Tau_{min} &= -2^{D\_TAU\_ADDR\_WIDTH - 1}+1 \label{eq::parameter_tau_min} \\
-	Tau_{max} &= 2^{D\_TAU\_ADDR\_WIDTH - 1}+1 \label{eq::parameter_tau_max}
+	\text{N}_{\text{Sample}} &= 2^{\text{D\_SAMPLE\_ADDR\_WIDTH}}-1 \label{eq::parameter_sample_cnt} \\
+	\text{N}_{\text{Tau}} &=2^{\text{D\_TAU\_ADDR\_WIDTH}}-2 \label{eq::parameter_tau_cnt} \\
+	\text{Tau}_{\text{min}} &= -2^{\text{D\_TAU\_ADDR\_WIDTH} - 1}+1 \label{eq::parameter_tau_min} \\
+	\text{Tau}_{\text{max}} &= 2^{\text{D\_TAU\_ADDR\_WIDTH} - 1}+1 \label{eq::parameter_tau_max}
 \end{align}
 
 \begin{table}[h]
 	\centering
-	\captionof{table}{Parameters for the XCorr}
-	\label{tbl::parameters}
 	\begin{tabular}{|l|c|c|l|l|}
 		\hline 
 		Parameter & Default & Range & Type & Description \\ 
 		\hline 
 		D\_WIDTH & 16 & 1\ldots18 & integer & Width of incoming microphone data\\
 		\hline 
-		D\_SAMPLE\_ADDR\_WIDTH & 12 & 6\ldots16 & integer & Address width for stored microphone samples\\
+		D\_SAMPLE\_ADDR\_WIDTH & 10 & 7\ldots16 & integer & Address width for stored microphone samples\\
 		\hline 
-		D\_TAU\_ADDR\_WIDTH & 6 & 1\ldots6 & integer & Address width for calculated Taus \\
-		\hline 
-	\end{tabular} 
-\end{table}
-
-\section{Register description}
-\label{sec::registers}
-There is a register to clear the internal RAM and one register for each correlation and Tau.
-Each can be accessed directly by their address as described in section \ref{sec::driver}.
-
-To clear the internal RAM, Address 0 needs to be set to 0x1 for at least $N_{Sample}$  clock cycles.
-Because only one internal RAM address can be set at once, asserting this bit for less than $N_{Sample}$ cycles results in corrupted data.
-
-The Taus can be read by using their representation in two's complement and the correct S from table \ref{tbl::tau_addr} to calculate their addresses according to equation \ref{eq:addr_calc}.
-The multiplication with four comes from the byte wise addressable memory and four byte width correlation data.
-
-\begin{align}
-	ADDR_{Tau} &= S\,\,|\,\, (\text{0x0FC}\, \&\, (4\times Tau)) \label{eq:addr_calc}
-\end{align}
-
-\begin{table}[h]
-	\centering
-	\captionof{table}{Tau address}
-	\label{tbl::tau_addr}
-	\begin{tabular}{|l|c|l|}
-		\hline 
-		S &  Cross-correlation between \\
-		\hline 
-		0x200	&  Microphone 2 and 3\\
-		\hline 
-		0x300	&  Microphone 2 and 1\\
+		D\_TAU\_ADDR\_WIDTH & 4 & 4\ldots6 & integer & Address width for calculated Taus \\
 		\hline 
 	\end{tabular} 
+	\caption{Parameters for the XCorr}
+	\label{tbl::parameters}
 \end{table}
 
 \section{Cross-correlation}
 \label{sec::cic}
 
-This block calculates the cross-correlation xcorr01 and xcorr02.
+This section describes the calculation of the cross-correlation xcorr01 and xcorr02.
 The first index indicates the reference microphone, which is fixed to mic0 (microphone 2 on PCB).
 The correlation is recalculated each time a new value is available.
-The recalculation takes $N_{Tau}+4$ clock cycles.
+The recalculation takes N\textsubscript{Tau}$\,+\,5$ clock cycles.
 An interrupt is asserted each time the cross-correlation has been recalculated.
 
 \subsection{Implementation}
 
-The cross-correlation of two discrete signals is defined per equation \ref{eq::xcorr}.
-Since only $N_{Sample}$ values are stored and available, the summation simplifies to equation \ref{eq::xcorr_ptau} for positive Taus and to \ref{eq::xcorr_ntau} for negative Taus.
+The cross-correlation of two discrete signals is defined per (\ref{eq::xcorr}).
+Since only N\textsubscript{Sample} values are stored and available, the summation simplifies to (\ref{eq::xcorr_ptau}) for positive and  (\ref{eq::xcorr_ntau}) for negative Taus.
 
 \begin{align}
-X_{ab}(\tau) &:= \sum_{n=-\infty}^{\infty}a\left[n\right]b\left[n+\tau\right] \label{eq::xcorr}\\
-&= \sum_{n=0}^{N_{Sample}-\tau-2}a\left[n\right]b\left[n+\tau\right] \forall\tau\ge0 \label{eq::xcorr_ptau} \\
-&= \sum_{n=0}^{N_{Sample}+\tau-2}a\left[n-\tau\right]b\left[n\right] \forall\tau<0 \label{eq::xcorr_ntau} \\	
+\text{XCorr}_\text{ab}(\tau) &:= \sum_{n=-\infty}^{\infty}\text{a}\left[n\right]\text{b}\left[n+\tau\right] \label{eq::xcorr}\\
+&= \sum_{n=0}^{\text{N}_\text{Sample}-\tau-2}\text{a}\left[n\right]\text{b}\left[n+\tau\right] \,\forall\,\tau\ge0 \label{eq::xcorr_ptau} \\
+&= \sum_{n=0}^{\text{N}_\text{Sample}+\tau-2}\text{a}\left[n-\tau\right]\text{b}\left[n\right] \,\forall\,\tau<0 \label{eq::xcorr_ntau} \\	
 \end{align}
 
 Each time new data is available, all stored values are shifted by one storage position.
@@ -126,19 +96,65 @@ Figure \ref{fig::block_diag} shows the data flow during recalculation.
 	\item Finally, SA denotes store on port A, which performs a write-back of the new calculated cross-correlation value.
 \end{itemize}
 
-Flip-flops are needed to store and shift the Taus corresponding to the single stages, as each block RAM fetch and store needs one clock cycle.
+Flip-flops are needed to store and shift the Taus corresponding to the single stages, as each block RAM fetch and store, as well as each MAC instruction needs one clock cycle.
 Consequently the store command comes always three clock cycles after load.
 Therefore neither collision nor simultaneous read / write is possible and no collision-detection is implemented.
+
+Initially an internal variable is set to the minimal Value $-2^{31}$.
+Each time a new Value is available at the output of the second DSP stage, these two values are compared.
+If the new Value from the DSP is greater, the corresponding Tau is saved.
+At the end of the recalculation, this tau is stored in the corresponding AXI register.
+\section{Register description}
+\label{sec::registers}
+Three registers are present.
+Register 0 is used to clear the internal RAM.
+This starts an internal state machine that iterates over the whole RAM region.
+While the internal RAM is being cleared, the whole block is locked and does not provide further functionality.
+From register 1 and 2, the Taus corresponding to the maximal correlation value can be read.
+Each register can be accessed directly by their address as described in section \ref{sec::driver}.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline 
+		Register Offset &  Description \\
+		\hline 
+		0x0	&  Write 1 to start clearing of internal RAM \\
+		& Returns 1 if RAM is being cleared \\
+		\hline 
+		0x4	&  Tau for xcorr01\\
+		\hline 
+		0x8 & Tau for xcorr02 \\
+		\hline
+	\end{tabular} 
+	\caption{Tau address}
+	\label{tbl::tau_addr}
+\end{table}
 
 \section{Driver}
 \label{sec::driver}
 
-For now, the core can only be used by addressing the registers directly.
-High-level access will be added in a future release.
-Two low-level functions are available.
-These functions are implemented as macros and should be used carefully.
+The IP core comes along with a driver to allow easy access by software.
+There are two categories of functions, high and low level.
+The usage of high level functions is recommended.
 Care must be taken to not confuse the microphones. 
 On the PCB they are numbered from 1 to 3 but in logic the numbering goes from 0 to 2.
+
+\subsection{High level functions}
+A typical use case with high level functions is as follows:
+\begin{itemize}
+	\item call XCORR\_Init(baseaddr, return\_imm) to initialize the IP core. \\
+	This clears the internal RAM. If return\_imm is FALSE, the function will wait until the RAM is cleared, otherwise it will return immediately.\\
+	Typically: XCORR\_Init(XCORR\_BASEADDR, 0).
+	\item Call XCORR\_GetTau(baseaddr, \&tau01, \&tau02). \\
+	This stores the taus in the provided variables tau01 and tau02.
+\end{itemize}
+
+
+\subsection{Low level functions}
+The core can also be used by addressing the registers directly.
+For this purpose two low-level functions are available.
+These functions are implemented as macros and should only be used if really necessary.
 
 \begin{itemize}
 	\item XCORR\_mWriteReg(BaseAddress, RegOffset, Data) \\

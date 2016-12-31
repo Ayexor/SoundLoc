@@ -6,7 +6,7 @@ entity block_ram is
 	generic(
 		D_IS_DUAL : boolean := false;
 		D_WIDTH : integer range 1 to 32     := 16; -- Internal width of data
-		A_WIDTH : integer range 6 to 16 := 10 -- Internal width of addr
+		A_WIDTH : integer range 4 to 16 := 10 -- Internal width of addr
 	);
 	port(Clk  : in  std_logic;
 		 aa   : in  unsigned(A_WIDTH - 1 downto 0);

@@ -5,22 +5,28 @@ format shortEng
 %% Import data from text file.
 filename = 'E:\git\SoundLoc\Roy\Matlab\std_out.log';
 fileID = fopen(filename,'r');
+
 try
-dataArray = textscan(fileID, '%f%f%f%[^\n\r]', 'Delimiter', ',',  'ReturnOnError', false);
+    data = fread(fileID,'int16');
+%     dataArray = textscan(fileID, '%f%f%f%[^\n\r]', 'Delimiter', ',',  'ReturnOnError', false);
 catch
 end
 fclose(fileID);
-
 %%
+data = data(1:floor(length(data)/3)*3);
+data = reshape(data,3, [])';
+mic1_r = data(:,1);
+mic2_r = data(:,2);
+mic3_r = data(:,3);
 
-mic1_r = dataArray{:, 1};
-mic2_r = dataArray{:, 2};
-mic3_r = dataArray{:, 3};
+% mic1_r = dataArray{:, 1};
+% mic2_r = dataArray{:, 2};
+% mic3_r = dataArray{:, 3};
 
 %% paramter
-decim = 32;
+decim = 70;
 c = 340; % speed of sound in m/s (set to 1 for delay in sec)
-pTau = 5000; % plot samples of corr
+pTau = 50; % plot samples of corr
 N = length(mic1_r);
 Ts = decim/(100e6/32);
 t = (1:N) * Ts;

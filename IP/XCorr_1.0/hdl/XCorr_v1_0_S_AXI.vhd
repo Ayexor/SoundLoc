@@ -3,65 +3,67 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 --use ieee.math_real.all;
 
-use work.xcorr_pkg.all;
+use work.XCorr_pkg.all;
 
 entity XCorr_v1_0_S_AXI is
 	generic(
 		-- Users to add parameters here
-		D_TAU_ADDR_WIDTH    : integer range 1 to 6  := 4;
+		D_TAU_ADDR_WIDTH   : integer range 4 to 6 := 4;
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
 
 		-- Width of S_AXI data bus
-		C_S_AXI_DATA_WIDTH : integer               := 32;
+		C_S_AXI_DATA_WIDTH : integer              := 32;
 		-- Width of S_AXI address bus
-		C_S_AXI_ADDR_WIDTH : integer               := 10
+		C_S_AXI_ADDR_WIDTH : integer              := 10
 	);
 	port(
 		-- Users to add ports here
-		xcorr01, xcorr02 : in  T_CORR_RAM(-(2 ** (D_TAU_ADDR_WIDTH-1))+1 to (2 ** (D_TAU_ADDR_WIDTH-1)) - 1);
---		corr_read_addr   : out integer range 0 to D_TAU_MAX-1;
---		data_valid       : in  std_logic;
-		clear_ram: out  std_logic;
+		--		corr01_axi, corr02_axi : in  signed(R_WIDTH - 1 downto 0);
+		--		tau_axi                : out signed(D_TAU_ADDR_WIDTH - 1 downto 0);
+		--		corr_data_valid        : in  std_logic;
+		clear_ram            : out std_logic;
+		clear_ram_ena        : in  std_logic;
+		max_tau01, max_tau02 : in  signed(D_TAU_ADDR_WIDTH - 1 downto 0);
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 
 		-- Global Clock Signal
-		S_AXI_ACLK       : in  std_logic;
+		S_AXI_ACLK           : in  std_logic;
 		-- Global Reset Signal. This Signal is Active LOW
-		S_AXI_ARESETN    : in  std_logic;
+		S_AXI_ARESETN        : in  std_logic;
 		-- Write address (issued by master, acceped by Slave)
-		S_AXI_AWADDR     : in  std_logic_vector(C_S_AXI_ADDR_WIDTH - 1 downto 0);
+		S_AXI_AWADDR         : in  std_logic_vector(C_S_AXI_ADDR_WIDTH - 1 downto 0);
 		-- Write address valid. This signal indicates that the master signaling
 		-- valid write address and control information.
-		S_AXI_AWVALID    : in  std_logic;
+		S_AXI_AWVALID        : in  std_logic;
 		-- Write address ready. This signal indicates that the slave is ready
 		-- to accept an address and associated control signals.
-		S_AXI_AWREADY    : out std_logic;
+		S_AXI_AWREADY        : out std_logic;
 		-- Write data (issued by master, acceped by Slave) 
-		S_AXI_WDATA      : in  std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+		S_AXI_WDATA          : in  std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
 		-- Write valid. This signal indicates that valid write
 		-- data and strobes are available.
-		S_AXI_WVALID     : in  std_logic;
+		S_AXI_WVALID         : in  std_logic;
 		-- Write ready. This signal indicates that the slave
 		-- can accept the write data.
-		S_AXI_WREADY     : out std_logic;
+		S_AXI_WREADY         : out std_logic;
 		-- Read address (issued by master, acceped by Slave)
-		S_AXI_ARADDR     : in  std_logic_vector(C_S_AXI_ADDR_WIDTH - 1 downto 0);
+		S_AXI_ARADDR         : in  std_logic_vector(C_S_AXI_ADDR_WIDTH - 1 downto 0);
 		-- Read address valid. This signal indicates that the channel
 		-- is signaling valid read address and control information.
-		S_AXI_ARVALID    : in  std_logic;
+		S_AXI_ARVALID        : in  std_logic;
 		-- Read address ready. This signal indicates that the slave is
 		-- ready to accept an address and associated control signals.
-		S_AXI_ARREADY    : out std_logic;
+		S_AXI_ARREADY        : out std_logic;
 		-- Read data (issued by slave)
-		S_AXI_RDATA      : out std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+		S_AXI_RDATA          : out std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
 		-- Read valid. This signal indicates that the channel is
 		-- signaling the required read data.
-		S_AXI_RVALID     : out std_logic;
+		S_AXI_RVALID         : out std_logic;
 		-- Read ready. This signal indicates that the master can
 		-- accept the read data and response information.
-		S_AXI_RREADY     : in  std_logic
+		S_AXI_RREADY         : in  std_logic
 	);
 end XCorr_v1_0_S_AXI;
 
@@ -85,26 +87,24 @@ architecture arch_imp of XCorr_v1_0_S_AXI is
 	------------------------------------------------
 	---- Signals for user logic register space example
 	--------------------------------------------------
-	---- Number of Slave Registers 10
-	type T_REG is array(-(2 ** (D_TAU_ADDR_WIDTH-1))+1 to (2 ** (D_TAU_ADDR_WIDTH-1)) - 1) of std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
-	
-	signal reg01, reg02 : T_REG;
-	signal slv_reg0            : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
-	signal slv_reg_rden        : std_logic;
-	signal slv_reg_wren        : std_logic;
-	signal reg_data_out        : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+	--	type T_REG is array (-(2 ** (D_TAU_ADDR_WIDTH - 1)) + 1 to (2 ** (D_TAU_ADDR_WIDTH - 1)) - 1) of std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+
+	--	signal reg01, reg02 : T_REG;
+	signal slv_reg0     : std_logic_vector(0 downto 0);
+	signal slv_reg_rden : std_logic;
+	signal slv_reg_wren : std_logic;
+	signal reg_data_out : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
 
 begin
-	
-	reg_map : process (xcorr01) is
-	begin
-		for i in -(2 ** (D_TAU_ADDR_WIDTH-1))+1 to (2 ** (D_TAU_ADDR_WIDTH-1)) - 1 loop
-			reg01(i) <= std_logic_vector(xcorr01(i));
-			reg02(i) <= std_logic_vector(xcorr01(i));
-		end loop;
-	end process reg_map;
-	
-	clear_ram  <= slv_reg0(0);
+	--	reg_map : process(xcorr01) is
+	--	begin
+	--		for i in -(2 ** (D_TAU_ADDR_WIDTH - 1)) + 1 to (2 ** (D_TAU_ADDR_WIDTH - 1)) - 1 loop
+	--			reg01(i) <= std_logic_vector(xcorr01(i));
+	--			reg02(i) <= std_logic_vector(xcorr01(i));
+	--		end loop;
+	--	end process reg_map;
+
+	clear_ram   <= slv_reg0(0);
 	-- I/O Connections assignments
 
 	S_AXI_AWREADY <= axi_awready;
@@ -144,7 +144,7 @@ begin
 	begin
 		if rising_edge(S_AXI_ACLK) then
 			if S_AXI_ARESETN = '0' then
-				axi_awaddr <= "0000000000";
+				axi_awaddr <= (others => '0');
 			else
 				if (axi_awready = '0' and S_AXI_AWVALID = '1' and S_AXI_WVALID = '1') then
 					-- Write Address latching
@@ -191,13 +191,14 @@ begin
 	begin
 		if rising_edge(S_AXI_ACLK) then
 			if S_AXI_ARESETN = '0' then
-				slv_reg0 <= (others => '0');
+				slv_reg0(0) <= '0';
 			else
+				slv_reg0(0) <= '0';     -- '1' for one clock after it has been written
 				if (slv_reg_wren = '1') then
 					if axi_awaddr = "0000000000" then --status register
-						slv_reg0 <= S_AXI_WDATA;
+						slv_reg0(0) <= S_AXI_WDATA(0);
 					else
-						slv_reg0 <= slv_reg0;
+						slv_reg0(0) <= slv_reg0(0);
 					end if;
 				end if;
 			end if;
@@ -246,6 +247,7 @@ begin
 			else
 				if (axi_arready = '1' and S_AXI_ARVALID = '1' and axi_rvalid = '0') then
 					-- Valid read data is available at the read data bus
+					--					axi_rvalid <= corr_data_valid;
 					axi_rvalid <= '1';
 				elsif (axi_rvalid = '1' and S_AXI_RREADY = '1') then
 					-- Read data is accepted by the master
@@ -260,23 +262,44 @@ begin
 	-- and the slave is ready to accept the read address.
 	slv_reg_rden <= axi_arready and S_AXI_ARVALID and (not axi_rvalid);
 
-	process(slv_reg0, axi_araddr, xcorr01, xcorr02)
+	--	process(slv_reg0, axi_araddr, corr01_axi, corr02_axi, max_tau01, max_tau02)
+	process(axi_araddr, max_tau01, max_tau02, clear_ram_ena)
 		variable loc_addr : std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
 	begin
 		-- Address decoding for reading registers
 		loc_addr := axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB);
-		if axi_araddr = "0000000000" then
-			reg_data_out <= slv_reg0;
-		elsif loc_addr(7) = '1' then
-			if loc_addr(6) = '0' then
-				reg_data_out <= std_logic_vector(resize(xcorr01(to_integer(signed(loc_addr(5 downto 0)))), C_S_AXI_DATA_WIDTH));
-			else
-				reg_data_out <= std_logic_vector(resize(xcorr02(to_integer(signed(loc_addr(5 downto 0)))), C_S_AXI_DATA_WIDTH));
-			end if;
-		else
-			reg_data_out <= (others => '0');
-		end if;
+		case loc_addr(7 downto 6) is
+			when "00" =>
+				case loc_addr(5 downto 0) is
+					when "000000" =>
+						reg_data_out(0)                      <= clear_ram_ena;
+						reg_data_out(C_S_AXI_DATA_WIDTH - 1 downto 1) <= (others => '0');
+					when "000001" =>
+						reg_data_out <= std_logic_vector(resize(max_tau01, C_S_AXI_DATA_WIDTH));
+					when "000010" =>
+						reg_data_out <= std_logic_vector(resize(max_tau02, C_S_AXI_DATA_WIDTH));
+					when others =>
+						reg_data_out <= (others => '0');
+				end case;
+			--			when "10" =>
+			--				reg_data_out <= std_logic_vector(resize(corr01_axi, C_S_AXI_DATA_WIDTH));
+			--			when "11" =>
+			--				reg_data_out <= std_logic_vector(resize(corr02_axi, C_S_AXI_DATA_WIDTH));
+			when others =>
+				reg_data_out <= (others => '0');
+		end case;
 	end process;
+
+	--	tau_select : process(axi_araddr) is
+	--		variable loc_addr : std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
+	--	begin
+	--		loc_addr := axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB);
+	--		if loc_addr(7) = '1' then
+	--			tau_axi <= signed(loc_addr(D_TAU_ADDR_WIDTH - 1 downto 0));
+	--		else
+	--			tau_axi <= to_signed(TAU_MIN, D_TAU_ADDR_WIDTH);
+	--		end if;
+	--	end process tau_select;
 
 	-- Output register or memory read data
 	process(S_AXI_ACLK) is

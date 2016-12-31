@@ -15,8 +15,8 @@
 
 //#define USE_LED_INTERPOL
 
-#define M_SQRT1_3 0.577350269189626f
-#define SH_ADDR XPAR_SH_S_AXI_BASEADDR
+#define M_SQRT1_3	0.577350269189626f
+#define SH_ADDR 	XPAR_SH_S_AXI_BASEADDR
 //volatile unsigned int cnt, val, idx=0x5555;		// FIXME get rid of these
 //XGpio led;
 
@@ -30,13 +30,12 @@ void LedDisplay_Init(void)
 
 void LedDisplay_Rotate(void)
 {
+	int idx = 0xAAAA;
 	while(1)
 	{
-		//cnt = 50000000;
-		//while(--cnt);
-		//val ^= 0xf;
-		//XGpio_DiscreteWrite(&led, 1, val);
-		//AXI_SH_595_programm_sh(SH_ADDR, idx=~idx);
+		volatile register int cnt = 2000000;
+		while(--cnt);
+		AXI_SH_595_programm_sh(SH_ADDR, idx=~idx);
 	}
 }
 

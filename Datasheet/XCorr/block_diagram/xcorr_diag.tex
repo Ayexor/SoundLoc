@@ -2,15 +2,16 @@
 
 
 %coordinates
-\newcommand{\xtau}	{0}
-\newcommand{\xfa}	{1.4}
-\newcommand{\xmaca}	{2.8}
-\newcommand{\xfb}	{4.2}
-\newcommand{\xmacb}	{5.6}
-\newcommand{\xsa}	{7}
+\newcommand{\xt}	{0}
+\newcommand{\xtc}	{0.75}
+\newcommand{\xfa}	{1.5}
+\newcommand{\xfac}	{2.25}
+\newcommand{\xfb}	{3.0}
+\newcommand{\xsat}	{4.5}
+\newcommand{\xsa}	{6.0}
 
-\newcommand{\yt}{2.8}
-\newcommand{\ym}{1.4}
+\newcommand{\yt}{3.0}
+\newcommand{\ym}{1.5}
 \newcommand{\yb}{0.0}
 
 \begin{document}
@@ -18,8 +19,8 @@
 	
 	\tikzstyle{block} = [draw, fill=\blueFill, rectangle, minimum height=1cm, minimum width=1cm]
 %	\tikzstyle{sum} = [draw, fill=\blueFill, circle, node distance=1cm]
-	\tikzstyle{input} = [coordinate]
-	\tikzstyle{output} = [coordinate]
+%	\tikzstyle{input} = [coordinate]
+%	\tikzstyle{output} = [coordinate]
 %	\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
 	
 
@@ -27,29 +28,31 @@
 %	\draw[style=my help lines] (0,0) grid (2,2);
 
 	%top
-	\draw (\xtau, \yt) node[block](tau){Tau};
-	\draw (\xfa, \yt) node[block](f1){$z^{-1}$};
-	\draw (\xfb, \yt) node[block](f2){$z^{-1}$};
+	\draw (\xt, \yt) node[block](tau){Tau};
+	\draw (\xfa, \yt) node[block](fat){$z^{-1}$};
+	\draw (\xfb, \yt) node[block](fbt){$z^{-1}$};
+	\draw (\xsat, \yt) node[block](sat){$z^{-1}$};
 	%mid
 	\draw (\xfa, \ym) node[block](FA){FA};
 	\draw (\xfb, \ym) node[block](FB){FB};
+	\draw (\xsa, \ym) node[block](SA){SA};
 	%bottom
-	\draw (\xmaca, \yb) node[block](MACA){DSP};
-	\draw (\xfb, \yb) node[block](f3){$z^{-1}$};
-	\draw (\xmacb, \yb) node[block](MACB){DSP};
-	\draw (\xsa, \yb) node[block](SA){SA};
+	\draw (\xfb, \yb) node[block](DSPA){DSP};
+	\draw (\xsat, \yb) node[block](DSPB){DSP};
 	
 	%arrows
-	\draw[->] (tau) |- (FA);
-	\draw[->] (FA) |- (MACA);
-	\draw[->] (MACA) -- (f3);
-	\draw[->] (f3)  -- (MACB);
-	\draw[->] (MACB) -- (SA);
-	\draw[->] (tau) -- (f1);
-	\draw[->] (f1) -- (f2);
-	\draw[->] (f2) -| (SA);
-	\draw[->] (\xmaca, \yt) -- (\xmaca, \ym)-- (FB);
-	\draw[->] (FB) -| (MACB);
+	\draw[->] (tau) -- (\xtc, \yt) |- (FA);
+	\draw[->] (FA) |- (DSPA);
+	\draw[->] (DSPA) -- (DSPB);
+	\draw[->] (DSPB) -| (SA);
+	
+	\draw[->] (tau) -- (fat);
+	\draw[->] (fat) -- (fbt);
+	\draw[->] (fbt) -- (sat);
+	\draw[->] (sat) -| (SA);
+	
+	\draw[->] (fat) -- (\xfac, \yt) |- (FB);
+	\draw[->] (FB) -| (DSPB);
 	
 	\end{tikzpicture}
 	

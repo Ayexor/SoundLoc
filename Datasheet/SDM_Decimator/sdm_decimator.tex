@@ -103,7 +103,7 @@ The individual bits in the status register are described in table  \ref{tbl::sta
 		\hline 
 		3		& iir\_ena	& Enables the IIR DC blocker \\
 		\hline 
-		7:4		& iir\_sr	& Sets the pole of the IIR DC blocker \\
+		7:4		& \text{iir\_sr}	& Sets the pole of the IIR DC blocker \\
 		\hline 
 		11:8	& post\_divide & Sets the post divider \\
 		\hline 
@@ -131,7 +131,7 @@ The differential Delay is fixed to $M=1$.
 The decimation factor $R$ and the order $N$ are set by software.
 See section \ref{sec::driver} for further information.
 The decimation factor is limited to the internal register width defined by parameter D\_WIDTH.
-A value greater than $2^{D\_WIDTH} - 1$ results in undefined behavior.
+A value greater than $2^\text{D\_WIDTH} - 1$ results in undefined behavior.
 The order can be set to 0\ldots3.
 \emph{Order 0 deactivates the filter and forces its outputs to 0.}
 
@@ -149,10 +149,14 @@ This may be needed as the correlation accumulates this DC component and may over
 The filter has the transfer function given in equation \ref{eq::iir_tf}.
 The pole is set close to $z=1$ to obtain a low cutoff frequency.
 The exact location is given in equation \ref{eq::iir_pole}.
-$iir\_sr\in\left[0,15\right]$ is set by software.
+iir\_sr $\in\left[0,15\right]$ is set by software.
+Care must be taken to the effects of integer mathematics.
+Since the division by 2\textsuperscript{iir\_sr} is implemented by shift operation, $(1-2^\text{iir\_sr})z^{-1}$ may equal $z^{-1}$, if the value stored in $z^{-1}$ is too small.
+This may result in strange behaviour and must be avoided.
+
 \begin{align}
-	H_{IIR} &= \frac{1-z^{-1}}{1-\left(1-2^{-iir\_sr}\right)z^{-1}} \label{eq::iir_tf}\\
-	z_p &= \frac{2^{iir\_sr}-1}{2^{iir\_sr}} \label{eq::iir_pole}
+	H_{IIR} &= \frac{1-z^{-1}}{1-\left(1-2^{-\text{iir\_sr}}\right)z^{-1}} \label{eq::iir_tf}\\
+	z_p &= \frac{2^{\text{iir\_sr}}-1}{2^{\text{iir\_sr}}} \label{eq::iir_pole}
 \end{align}
 
 \section{Post divider}

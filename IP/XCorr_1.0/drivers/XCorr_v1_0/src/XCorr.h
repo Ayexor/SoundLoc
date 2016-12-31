@@ -8,16 +8,9 @@
 #include "xil_io.h"
 #include "xstatus.h"
 
-#define XCORR_S_AXI_SLV_REG0_OFFSET 0
-#define XCORR_S_AXI_SLV_REG1_OFFSET 4
-#define XCORR_S_AXI_SLV_REG2_OFFSET 8
-#define XCORR_S_AXI_SLV_REG3_OFFSET 12
-#define XCORR_S_AXI_SLV_REG4_OFFSET 16
-#define XCORR_S_AXI_SLV_REG5_OFFSET 20
-#define XCORR_S_AXI_SLV_REG6_OFFSET 24
-#define XCORR_S_AXI_SLV_REG7_OFFSET 28
-#define XCORR_S_AXI_SLV_REG8_OFFSET 32
-#define XCORR_S_AXI_SLV_REG9_OFFSET 36
+#define XCORR_REG0_CLEAR_RAM_OFFSET 0
+#define XCORR_REG1_XCORR01_OFFSET 4
+#define XCORR_REG2_XCORR02_OFFSET 8
 
 
 /**************************** Type Definitions *****************************/
@@ -61,26 +54,29 @@
 #define XCORR_mReadReg(BaseAddress, RegOffset) \
     Xil_In32((BaseAddress) + (RegOffset))
 
-/************************** Function Prototypes ****************************/
 /**
  *
- * Run a self-test on the driver/device. Note this may be a destructive test if
- * resets of the device are performed.
+ * Initialize XCorr and clear internal RAM.
  *
- * If the hardware system is not built correctly, this function may never
- * return to the caller.
+ * @param   BaseAddress is the base address of the XCORR device.
+ * @param   if ReturnImm is 0, the function does not return until
+ *          the internal RAM is cleared
  *
- * @param   baseaddr_p is the base address of the XCORR instance to be worked on.
- *
- * @return
- *
- *    - XST_SUCCESS   if all self-test code passed
- *    - XST_FAILURE   if any self-test code failed
- *
- * @note    Caching must be turned off for this function to work.
- * @note    Self test may fail if data memory and device are not on the same bus.
+ * @return  None.
  *
  */
-XStatus XCORR_Reg_SelfTest(int baseaddr_p);
+void XCORR_Init(int BaseAddress, int ReturnImm);
+
+/**
+ *
+ * Read the two Taus from the XCORR device.
+ *
+ * @param   BaseAddress is the base address of the XCORR device.
+ * @param   tau01 and tau02 are pointers where the values are to be stored.
+ *
+ * @return  None.
+ *
+ */
+void XCORR_GetTau(int BaseAddress, s32* tau01, s32* tau02);
 
 #endif // XCORR_H

@@ -9,11 +9,11 @@
 #include "SDM.h"
 #include "SDM_Decimator.h"
 
-#define DECIMATION		64
+#define DECIMATION		70
 #define ORDER			3
-#define POST_DIVIDE		0x200	// 0x100 to 0xf00
+#define POST_DIVIDE		0x600	// 0x100 to 0xf00
 #define IIR_ENA			0x8		// 0x8 or 0x0
-#define IIR_SR			0x070	// 0x010 to 0x0f0
+#define IIR_SR			0x80	// 0x10 to 0xf0
 
 #define IRQ_ENA			0x4 	//3. bit
 #define SDM_STATUS		(ORDER | IRQ_ENA | IIR_ENA | IIR_SR | POST_DIVIDE)
@@ -36,7 +36,7 @@ void sdmGetMics(s32* mic0, s32* mic1, s32* mic2){
 }
 
 void sdmGetMics(s32* mic){
-	for (int idx = 2; idx; --idx)
+	for (int idx = 3; idx--; )
 		mic[idx] = SDM_DECIM_getValue(CIC, idx);
 }
 
