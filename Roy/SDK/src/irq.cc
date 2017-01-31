@@ -10,7 +10,7 @@
 #include "xintc.h"
 #include "uart.h"
 
-#define IRQ_ID 		XPAR_INTC_XCORR_IRQ_INTR
+#define IRQ_ID 		XPAR_INTC_XCORR_AP_DONE_INTR
 #define UART_ID		XPAR_INTC_UART_INTERRUPT_INTR
 //#define IRQ_ID 		XPAR_INTC_SDM_DECIMATOR_IRQ_NEW_VAL_INTR
 

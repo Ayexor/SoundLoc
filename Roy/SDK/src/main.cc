@@ -26,11 +26,11 @@ int main()
 //	waitTxEmpty();
 //	LedDisplay_Init();	LedDisplay_Rotate();
 
-	micLog();
+//	micLog();
 //	corrLog();
 //	dataLog();
 
-//	soundLoc();
+	soundLoc();
 
 	waitTxEmpty();
 //	while(1);
