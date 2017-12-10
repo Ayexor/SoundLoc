@@ -1,12 +1,12 @@
 # SoundLoc
+localization of sound sources by cross-correlating three ΣΔ-microphone signals in a zynq FPGA system-on-a-chip
 
-PCB with microphone array and compass-style LED display, top-level system diagram
+PCB with microphone array and compass-style LED display, top-level system diagram:
 
 <img src="https://raw.githubusercontent.com/mzollin/SoundLoc/master/Datasheet/project_datasheet/block_diagram/pcb.jpg" width="48%"> <img src="https://raw.githubusercontent.com/mzollin/SoundLoc/master/Datasheet/project_datasheet/block_diagram/system_top_01.png" width="48%">
 
 
-Projekt SoundLoc von
-
+Projekt SoundLoc von: <br>
 Roy Seitz rseitz@hsr.ch, Marco Zollinger marco@freelabs.space
 
 Modul Digital Microelectronics DigME <br>
