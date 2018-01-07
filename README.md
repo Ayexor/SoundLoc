@@ -1,5 +1,5 @@
 # SoundLoc
-localization of sound sources by cross-correlating three ΣΔ-microphone signals in a zynq FPGA system-on-a-chip
+localization of sound sources by cross-correlating three ΣΔ-modulated microphone signals in a zynq FPGA system-on-a-chip
 
 PCB with microphone array and compass-style LED display, top-level system diagram:
 
